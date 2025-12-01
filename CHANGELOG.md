@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/Citolab/numflux/compare/v1.0.0...v1.1.0) (2025-12-01)
+
+
+### Features
+
+* add github pages docs ([f8ca988](https://github.com/Citolab/numflux/commit/f8ca988be0bf214d046bbede7daed15d1623ff26))
+
 ## 1.0.0 (2025-12-01)
 
 
