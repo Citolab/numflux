@@ -127,11 +127,6 @@
             <h1>🔢 Numflux</h1>
             <p class="subtitle">Framework-agnostic numpad component</p>
             <div class="version-badge">v1.0.0</div>
-            <div class="links">
-                <a href="https://github.com/Citolab/numflux" target="_blank">GitHub</a>
-                <a href="https://www.npmjs.com/package/@citolab/numflux" target="_blank">npm</a>
-                <a href="https://github.com/Citolab/numflux#readme" target="_blank">Documentation</a>
-            </div>
         </header>
 
         <div class="demo-grid">
@@ -167,60 +162,43 @@
         </div>
 
         <footer>
-            <p>Built with ❤️ by CitoLab</p>
-            <p style="margin-top: 0.5rem; opacity: 0.8; font-size: 0.9rem;">
-                Install: <code style="background: rgba(255,255,255,0.2); padding: 0.25rem 0.5rem; border-radius: 4px;">npm install @citolab/numflux</code>
-            </p>
+<div class="links">
+  <a href="https://github.com/Citolab/numflux" target="_blank">GitHub</a>
+  <a href="https://www.npmjs.com/package/@citolab/numflux" target="_blank">npm</a>
+  <a href="https://github.com/Citolab/numflux#readme" target="_blank">Documentation</a>
+</div>
         </footer>
     </div>
 
     <script type="module">
-        // This will be updated to use the actual published package
-        // For now, it shows the structure
+        // Use the local built version from dist folder
+        import { createStyledNumpad } from './dist/index.js';
 
-        console.log('Numflux Demo Page');
-        console.log('To use the actual numpad, import from @citolab/numflux');
-        console.log('Example: import { createStyledNumpad } from "@citolab/numflux"');
+        // Currency demo (light theme, 2 decimals)
+        createStyledNumpad(document.getElementById('currency-demo'), {
+            allowDecimal: 2,
+            theme: 'light',
+            onChange: (state, display) => {
+                document.getElementById('currency-output').textContent = display.formatted || '0.00';
+            }
+        });
 
-        // Placeholder implementation to show the structure
-        const demos = [
-            { id: 'currency-demo', output: 'currency-output', config: { allowDecimal: 2, theme: 'light' } },
-            { id: 'dark-demo', output: 'dark-output', config: { allowDecimal: 0, theme: 'dark' } },
-            { id: 'integer-demo', output: 'integer-output', config: { allowDecimal: false, theme: 'light' } }
-        ];
+        // Dark theme demo (no decimals)
+        createStyledNumpad(document.getElementById('dark-demo'), {
+            allowDecimal: false,
+            theme: 'dark',
+            onChange: (state, display) => {
+                document.getElementById('dark-output').textContent = display.formatted || '0';
+            }
+        });
 
-        demos.forEach(demo => {
-            const container = document.getElementById(demo.id);
-            const output = document.getElementById(demo.output);
-
-            // Create placeholder
-            const placeholder = document.createElement('div');
-            placeholder.style.cssText = `
-                padding: 2rem;
-                text-align: center;
-                color: #999;
-                border: 2px dashed #ddd;
-                border-radius: 8px;
-                width: 100%;
-            `;
-            placeholder.innerHTML = `
-                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔢</div>
-                <div>Numpad will appear here</div>
-                <div style="font-size: 0.8rem; margin-top: 0.5rem;">
-                    Theme: ${demo.config.theme}<br>
-                    Decimals: ${demo.config.allowDecimal === false ? 'No' : demo.config.allowDecimal}
-                </div>
-            `;
-            container.appendChild(placeholder);
-
-            // In production, this would be:
-            // import { createStyledNumpad } from '@citolab/numflux';
-            // const numpad = createStyledNumpad(container, {
-            //     ...demo.config,
-            //     onChange: (state, display) => {
-            //         output.textContent = display.formatted;
-            //     }
-            // });
+        // Integer only demo (light theme)
+        createStyledNumpad(document.getElementById('integer-demo'), {
+            allowDecimal: false,
+            theme: 'light',
+            onChange: (state, display) => {
+                document.getElementById('integer-output').textContent = display.formatted || '0';
+            }
         });
     </script>
 </body>
