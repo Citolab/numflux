@@ -1,7 +1,7 @@
 {
-  "name": "numflux",
+  "name": "@citolab/numflux",
   "version": "0.1.0",
-  "description": "Framework-agnostic numpad logic and lightweight UI helpers.",
+  "description": "Framework-agnostic numpad",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,7 +19,6 @@
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "css:types": "typed-css-modules src/styles --outDir src/types --camelCase --exportType default",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -30,11 +29,22 @@
     "typescript",
     "framework-agnostic"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Citolab/numflux.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Citolab/numflux/issues"
+  },
+  "homepage": "https://github.com/Citolab/numflux#readme",
   "author": {
     "name": "Denise Broekman",
     "company": "CitoLab"
   },
   "license": "GPLv3",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@storybook/addon-essentials": "^8.6.14",
     "@storybook/html-vite": "^8.6.14",

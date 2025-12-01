@@ -17,11 +17,11 @@ A TypeScript library that provides a clean, extensible numpad implementation. Bu
 ## 🚀 Quick Start
 
 ```bash
-npm install numflux
+npm install @citolab/numflux
 ```
 
 ```typescript
-import { createStyledNumpad } from "numflux";
+import { createStyledNumpad } from "@citolab/numflux";
 
 const numpad = createStyledNumpad(document.getElementById("numpad"), {
   allowDecimal: 2,
@@ -45,7 +45,7 @@ import {
   formatDisplayValue,
   mapKeyToAction,
   reduceNumpad
-} from "numflux";
+} from "@citolab/numflux";
 
 const config = {
   allowDecimal: 2,
@@ -84,7 +84,7 @@ const currencyConfig: NumpadConfig = {
 
 **Utility Functions:**
 ```typescript
-import { toNumber, isValidValue, sanitizeValue } from "numflux";
+import { toNumber, isValidValue, sanitizeValue } from "@citolab/numflux";
 
 // Convert to number safely
 const num = toNumber("42.50"); // -> 42.5
@@ -103,7 +103,7 @@ const clean = sanitizeValue("00042.500", { allowDecimal: 2 }); // -> "42.50"
 
 **Option 1: Zero imports (Recommended)**
 ```typescript
-import { createStyledNumpad } from "numflux";
+import { createStyledNumpad } from "@citolab/numflux";
 
 const numpad = createStyledNumpad(document.getElementById("container"), {
   allowDecimal: 2,
@@ -126,7 +126,7 @@ numpad.destroy();
 <summary><strong>⚡ Framework-agnostic DOM (No styling)</strong></summary>
 
 ```typescript
-import { createNumpadDom } from "numflux";
+import { createNumpadDom } from "@citolab/numflux";
 
 const numpad = createNumpadDom(document.getElementById("container"), {
   allowDecimal: 2,
@@ -196,7 +196,7 @@ Numflux offers three styling approaches with increasing levels of customization:
 Automatic CSS import, zero configuration, perfect for most projects.
 
 ```typescript
-import { createStyledNumpad } from "numflux";
+import { createStyledNumpad } from "@citolab/numflux";
 
 const numpad = createStyledNumpad(container, {
   theme: "dark", // 'light' | 'dark'
@@ -218,8 +218,8 @@ const numpad = createStyledNumpad(container, {
 Full control over themes and labels, requires CSS import.
 
 ```typescript
-import { mountNumpad } from "numflux";
-import "numflux/dist/styles/numpad.module.css";
+import { mountNumpad } from "@citolab/numflux";
+import "@citolab/numflux/dist/styles/numpad.module.css";
 
 const numpad = mountNumpad(container, {
   theme: "dark", // 'light' | 'dark'
@@ -237,7 +237,7 @@ const numpad = mountNumpad(container, {
 Unstyled core, build your own design with utilities.
 
 ```typescript
-import { createNumpadDom, withTheme, withClassNames } from "numflux";
+import { createNumpadDom, withTheme, withClassNames } from "@citolab/numflux";
 
 let numpad = createNumpadDom(container);
 numpad = withTheme(numpad, {
@@ -297,7 +297,7 @@ const numpad = createStyledNumpad(container, {
 **Styled Hook (Zero imports):**
 ```typescript
 import { useEffect, useRef } from "react";
-import { createStyledNumpad } from "numflux";
+import { createStyledNumpad } from "@citolab/numflux";
 
 function useStyledNumpad(options) {
   const containerRef = useRef(null);
@@ -329,7 +329,7 @@ function Calculator() {
 **Custom Hook (Unstyled):**
 ```typescript
 import { useEffect, useRef } from "react";
-import { createNumpadDom } from "numflux";
+import { createNumpadDom } from "@citolab/numflux";
 
 function useNumpad(options) {
   const containerRef = useRef(null);
@@ -349,7 +349,7 @@ function useNumpad(options) {
 **Pure React Implementation:**
 ```typescript
 import { useState } from "react";
-import { createNumpadState, reduceNumpad, formatDisplayValue } from "numflux";
+import { createNumpadState, reduceNumpad, formatDisplayValue } from "@citolab/numflux";
 
 function ReactNumpad() {
   const [state, setState] = useState(() => createNumpadState(""));
@@ -383,7 +383,7 @@ function ReactNumpad() {
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { createStyledNumpad } from 'numflux';
+import { createStyledNumpad } from '@citolab/numflux';
 // No CSS import needed! ✨
 
 const props = defineProps(['options']);
@@ -417,7 +417,7 @@ onUnmounted(() => {
 
 ```typescript
 import { Component, ElementRef, Input, Output, EventEmitter, AfterViewInit, OnDestroy } from '@angular/core';
-import { createStyledNumpad, StyledNumpadOptions } from 'numflux';
+import { createStyledNumpad, StyledNumpadOptions } from '@citolab/numflux';
 // No CSS import needed! ✨
 
 @Component({
@@ -459,7 +459,7 @@ export class NumpadComponent implements AfterViewInit, OnDestroy {
 ```svelte
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import { createStyledNumpad } from 'numflux';
+  import { createStyledNumpad } from '@citolab/numflux';
   // No CSS import needed! ✨
 
   export let options = {};
@@ -496,7 +496,7 @@ export class NumpadComponent implements AfterViewInit, OnDestroy {
 
 **Tailwind CSS:**
 ```typescript
-import { createNumpadDom, withClassNames } from "numflux";
+import { createNumpadDom, withClassNames } from "@citolab/numflux";
 
 function createTailwindNumpad(container, options) {
   const numpad = createNumpadDom(container, options);
@@ -514,7 +514,7 @@ function createTailwindNumpad(container, options) {
 
 **Styled Components:**
 ```typescript
-import { createNumpadDom, withTheme } from "numflux";
+import { createNumpadDom, withTheme } from "@citolab/numflux";
 
 function createStyledNumpad(container, theme, options) {
   const numpad = createNumpadDom(container, options);
@@ -549,7 +549,7 @@ import {
   withEventHandlers,
   withAttributes,
   compose
-} from "numflux";
+} from "@citolab/numflux";
 
 // Compose multiple enhancements
 const createCustomNumpad = compose(
@@ -587,7 +587,7 @@ const numpad = createCustomNumpad(
 <summary><strong>🎯 Custom Validation</strong></summary>
 
 ```typescript
-import { mountNumpad } from "numflux";
+import { mountNumpad } from "@citolab/numflux";
 
 const numpad = mountNumpad(container, {
   allowDecimal: 2,
@@ -645,14 +645,14 @@ import {
   formatDisplayValue,
   mapKeyToAction,
   normalizeConfig
-} from "numflux";
+} from "@citolab/numflux";
 
 // DOM implementations
 import {
   createNumpadDom,    // Framework-agnostic DOM (unstyled)
   createStyledNumpad, // Styled with automatic CSS injection (zero imports!)
   mountNumpad         // Styled with CSS modules (advanced)
-} from "numflux";
+} from "@citolab/numflux";
 
 // Composable utilities
 import {
@@ -661,7 +661,7 @@ import {
   withEventHandlers,
   withAttributes,
   compose
-} from "numflux";
+} from "@citolab/numflux";
 
 // Icon integration helpers
 import {
@@ -669,7 +669,7 @@ import {
   createCssIconTheme,
   createCustomIconTheme,
   extractSvgString
-} from "numflux";
+} from "@citolab/numflux";
 
 // Validation utilities
 import {
@@ -677,7 +677,7 @@ import {
   isValidValue,
   sanitizeValue,
   getDecimalPlaces
-} from "numflux";
+} from "@citolab/numflux";
 ```
 
 </details>

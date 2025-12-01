@@ -828,8 +828,8 @@ A reactive Vue 3 input that keeps the numpad in sync with your model and emits u
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, computed, watch } from "vue";
-import { createStyledNumpad } from "numflux";
-import type { NumpadDomInstance } from "numflux";
+import { createStyledNumpad } from "@citolab/numflux";
+import type { NumpadDomInstance } from "@citolab/numflux";
 
 const props = defineProps<{
   modelValue?: number;
@@ -931,7 +931,7 @@ import {
   Output,
   ViewChild
 } from "@angular/core";
-import { createStyledNumpad, type NumpadDomInstance, type DisplayValue } from "numflux";
+import { createStyledNumpad, type NumpadDomInstance, type DisplayValue } from "@citolab/numflux";
 
 @Component({
   selector: "app-numpad",
