@@ -24,22 +24,12 @@ export {
   normalizeLeadingZeros
 } from "@/utils/validation.utils";
 
-// Vanilla DOM implementation (unstyled)
+// Main numpad integration (requires CSS import)
 export {
-  mountNumpad,
-  type VanillaNumpadOptions,
-  type VanillaNumpadInstance
-} from "@/integrations/vanilla";
-
-// Styled numpad with bundled CSS (no separate CSS import required!)
-export {
-  createStyledNumpad,
-  type StyledNumpadOptions,
-  type StyledNumpadInstance
+  createNumpad,
+  type CreateNumpadOptions,
+  type CreateNumpadInstance
 } from "@/integrations/styled";
-
-// Convenience alias - works exactly like mountNumpad but with bundled CSS
-export { createStyledNumpad as mountStyledNumpad } from "@/integrations/styled";
 
 // Icon integration helpers
 export {

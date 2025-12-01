@@ -23,9 +23,10 @@ npm install @citolab/numflux
 ```
 
 ```typescript
-import { createStyledNumpad } from "@citolab/numflux";
+import { createNumpad } from "@citolab/numflux";
+import "@citolab/numflux/dist/style.css";
 
-const numpad = createStyledNumpad(document.getElementById("numpad"), {
+const numpad = createNumpad(document.getElementById("numpad"), {
   allowDecimal: 2,
   theme: "light", // or "dark"
   onChange: (state, display) => {
@@ -101,13 +102,13 @@ const clean = sanitizeValue("00042.500", { allowDecimal: 2 }); // -> "42.50"
 </details>
 
 <details>
-<summary><strong>🎨 Ready-to-use Styled Numpad</strong></summary>
+<summary><strong>🎨 Styled Numpad</strong></summary>
 
-**Option 1: Zero imports (Recommended)**
 ```typescript
-import { createStyledNumpad } from "@citolab/numflux";
+import { createNumpad } from "@citolab/numflux";
+import "@citolab/numflux/dist/style.css";
 
-const numpad = createStyledNumpad(document.getElementById("container"), {
+const numpad = createNumpad(document.getElementById("container"), {
   allowDecimal: 2,
   theme: "dark",
   onChange: (state, display) => {
@@ -192,50 +193,27 @@ Numflux uses a **layered architecture** where each layer is completely independe
 
 ## 🎨 Styling Options
 
-Numflux offers three styling approaches with increasing levels of customization:
+Numflux offers two styling approaches:
 
 ### 1. 🚀 **Styled Numpad** (Recommended)
-Automatic CSS import, zero configuration, perfect for most projects.
+Pre-built styles with themes, minimal setup required.
 
 ```typescript
-import { createStyledNumpad } from "@citolab/numflux";
+import { createNumpad } from "@citolab/numflux";
+import "@citolab/numflux/dist/style.css";
 
-const numpad = createStyledNumpad(container, {
+const numpad = createNumpad(container, {
   theme: "dark", // 'light' | 'dark'
-  className: "my-numpad", // Additional CSS classes
-  // Override CSS variables programmatically
-  theme: {
-    name: "custom",
-    cssVars: { "--nf-accent": "#ff4757" }
-  }
+  className: "my-numpad" // Additional CSS classes
 });
 ```
 
-**Features:** Built-in themes, CSS variable overrides, automatic CSS import
-**Best for:** Quick setup, most web applications
+**Features:** Built-in themes, CSS variable overrides
+**Best for:** Most projects
 
 ---
 
-### 2. 🎛️ **CSS Modules** (Advanced)
-Full control over themes and labels, requires CSS import.
-
-```typescript
-import { mountNumpad } from "@citolab/numflux";
-import "@citolab/numflux/dist/styles/numpad.module.css";
-
-const numpad = mountNumpad(container, {
-  theme: "dark", // 'light' | 'dark'
-  labelTheme: "unicode", // 'ascii' | 'unicode' | 'symbols' | 'minimal'
-  labels: { delete: "Back", submit: "Done" } // Custom labels
-});
-```
-
-**Features:** Label customization, icon integration, CSS Modules
-**Best for:** Advanced theming, custom labels, design systems
-
----
-
-### 3. 🛠️ **Custom Styling** (Full Control)
+### 2. 🛠️ **Custom Styling** (Full Control)
 Unstyled core, build your own design with utilities.
 
 ```typescript
@@ -296,18 +274,18 @@ const numpad = createStyledNumpad(container, {
 <details>
 <summary><strong>⚛️ React</strong></summary>
 
-**Styled Hook (Zero imports):**
 ```typescript
 import { useEffect, useRef } from "react";
-import { createStyledNumpad } from "@citolab/numflux";
+import { createNumpad } from "@citolab/numflux";
+import "@citolab/numflux/dist/style.css";
 
-function useStyledNumpad(options) {
+function useNumpad(options) {
   const containerRef = useRef(null);
   const instanceRef = useRef(null);
 
   useEffect(() => {
     if (containerRef.current) {
-      instanceRef.current = createStyledNumpad(containerRef.current, options);
+      instanceRef.current = createNumpad(containerRef.current, options);
     }
     return () => instanceRef.current?.destroy();
   }, []);
@@ -316,7 +294,7 @@ function useStyledNumpad(options) {
 }
 
 function Calculator() {
-  const { containerRef } = useStyledNumpad({
+  const { containerRef } = useNumpad({
     allowDecimal: 2,
     theme: "dark",
     onChange: (state, display) => {
@@ -385,8 +363,8 @@ function ReactNumpad() {
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { createStyledNumpad } from '@citolab/numflux';
-// No CSS import needed! ✨
+import { createNumpad } from '@citolab/numflux';
+import '@citolab/numflux/dist/style.css';
 
 const props = defineProps(['options']);
 const emit = defineEmits(['change']);
@@ -396,7 +374,7 @@ let numpadInstance = null;
 
 onMounted(() => {
   if (numpadRef.value) {
-    numpadInstance = createStyledNumpad(numpadRef.value, {
+    numpadInstance = createNumpad(numpadRef.value, {
       theme: 'light',
       ...props.options,
       onChange: (state, display) => {
@@ -419,15 +397,15 @@ onUnmounted(() => {
 
 ```typescript
 import { Component, ElementRef, Input, Output, EventEmitter, AfterViewInit, OnDestroy } from '@angular/core';
-import { createStyledNumpad, StyledNumpadOptions } from '@citolab/numflux';
-// No CSS import needed! ✨
+import { createNumpad, CreateNumpadOptions } from '@citolab/numflux';
+import '@citolab/numflux/dist/style.css';
 
 @Component({
   selector: 'app-numpad',
   template: '<div></div>'
 })
 export class NumpadComponent implements AfterViewInit, OnDestroy {
-  @Input() options: StyledNumpadOptions = {};
+  @Input() options: CreateNumpadOptions = {};
   @Output() change = new EventEmitter();
 
   private numpadInstance: any;
@@ -435,7 +413,7 @@ export class NumpadComponent implements AfterViewInit, OnDestroy {
   constructor(private elementRef: ElementRef) {}
 
   ngAfterViewInit() {
-    this.numpadInstance = createStyledNumpad(
+    this.numpadInstance = createNumpad(
       this.elementRef.nativeElement.firstChild,
       {
         theme: 'light',
@@ -461,8 +439,8 @@ export class NumpadComponent implements AfterViewInit, OnDestroy {
 ```svelte
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import { createStyledNumpad } from '@citolab/numflux';
-  // No CSS import needed! ✨
+  import { createNumpad } from '@citolab/numflux';
+  import '@citolab/numflux/dist/style.css';
 
   export let options = {};
   export let theme = 'light';
@@ -472,7 +450,7 @@ export class NumpadComponent implements AfterViewInit, OnDestroy {
 
   onMount(() => {
     if (container) {
-      numpadInstance = createStyledNumpad(container, {
+      numpadInstance = createNumpad(container, {
         theme,
         ...options,
         onChange: (state, display) => {
@@ -518,7 +496,7 @@ function createTailwindNumpad(container, options) {
 ```typescript
 import { createNumpadDom, withTheme } from "@citolab/numflux";
 
-function createStyledNumpad(container, theme, options) {
+function createCustomNumpad(container, theme, options) {
   const numpad = createNumpadDom(container, options);
 
   return withTheme(numpad, {
@@ -589,9 +567,10 @@ const numpad = createCustomNumpad(
 <summary><strong>🎯 Custom Validation</strong></summary>
 
 ```typescript
-import { mountNumpad } from "@citolab/numflux";
+import { createNumpad } from "@citolab/numflux";
+import "@citolab/numflux/dist/style.css";
 
-const numpad = mountNumpad(container, {
+const numpad = createNumpad(container, {
   allowDecimal: 2,
   min: 0,
   max: 1000000,
@@ -616,10 +595,13 @@ const numpad = mountNumpad(container, {
 </details>
 
 <details>
-<summary><summary><strong>🔄 Real-time Sync</strong></summary>
+<summary><strong>🔄 Real-time Sync</strong></summary>
 
 ```typescript
-const numpad = mountNumpad(container, {
+import { createNumpad } from "@citolab/numflux";
+import "@citolab/numflux/dist/style.css";
+
+const numpad = createNumpad(container, {
   sync: true, // Enable real-time onChange
   onChange: (state, display) => {
     // Called on every keystroke
@@ -651,9 +633,8 @@ import {
 
 // DOM implementations
 import {
-  createNumpadDom,    // Framework-agnostic DOM (unstyled)
-  createStyledNumpad, // Styled with automatic CSS injection (zero imports!)
-  mountNumpad         // Styled with CSS modules (advanced)
+  createNumpad,       // Styled numpad (requires CSS import)
+  createNumpadDom     // Framework-agnostic DOM (unstyled)
 } from "@citolab/numflux";
 
 // Composable utilities
@@ -815,11 +796,10 @@ src/
 
 | Integration | Best For | Bundle Size | CSS Import Required |
 |-------------|----------|-------------|-------------------|
-| `createStyledNumpad` | **Most projects** - Drop-in styled numpad | ~12kb gzipped | ❌ No (auto-injected) |
-| `mountNumpad` | Advanced CSS Modules features, label customization | ~8kb gzipped | ✅ Yes (CSS Modules) |
+| `createNumpad` | **Most projects** - Styled numpad with themes | ~8kb gzipped | ✅ Yes |
 | `createNumpadDom` | Custom styling, framework integration | ~6kb gzipped | ✅ Yes (your styles) |
 
-**📋 Recommendation:** Start with `createStyledNumpad` for the best developer experience!
+**📋 Recommendation:** Start with `createNumpad` for the best developer experience!
 
 ---
 

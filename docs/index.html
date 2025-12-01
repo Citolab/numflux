@@ -173,10 +173,10 @@
 
     <script type="module">
         // Use the local built version from dist folder
-        import { createStyledNumpad } from './dist/index.js';
+        import { createNumpad } from './dist/index.js';
 
         // Currency demo (light theme, 2 decimals)
-        createStyledNumpad(document.getElementById('currency-demo'), {
+        createNumpad(document.getElementById('currency-demo'), {
             allowDecimal: 2,
             theme: 'light',
             onChange: (state, display) => {
@@ -185,7 +185,7 @@
         });
 
         // Dark theme demo (no decimals)
-        createStyledNumpad(document.getElementById('dark-demo'), {
+        createNumpad(document.getElementById('dark-demo'), {
             allowDecimal: false,
             theme: 'dark',
             onChange: (state, display) => {
@@ -194,7 +194,7 @@
         });
 
         // Integer only demo (light theme)
-        createStyledNumpad(document.getElementById('integer-demo'), {
+        createNumpad(document.getElementById('integer-demo'), {
             allowDecimal: false,
             theme: 'light',
             onChange: (state, display) => {

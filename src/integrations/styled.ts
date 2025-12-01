@@ -2,7 +2,7 @@ import { createNumpadDom, type NumpadDomOptions, type NumpadDomInstance } from "
 import "@/styles/numpad.global.css";
 import { getButtonVariant } from "./utils";
 
-export interface StyledNumpadOptions extends Omit<
+export interface CreateNumpadOptions extends Omit<
   NumpadDomOptions,
   "className" | "styles" | "theme"
 > {
@@ -12,16 +12,16 @@ export interface StyledNumpadOptions extends Omit<
   className?: string;
 }
 
-export interface StyledNumpadInstance extends NumpadDomInstance {}
+export interface CreateNumpadInstance extends NumpadDomInstance {}
 
 /**
- * Styled numpad integration with global CSS classes.
- * Imports styles automatically - no separate CSS import needed!
+ * Creates a styled numpad with global CSS classes.
+ * Requires CSS import: import "@citolab/numflux/dist/style.css"
  */
-export function createStyledNumpad(
+export function createNumpad(
   target: HTMLElement,
-  options: StyledNumpadOptions = {}
-): StyledNumpadInstance {
+  options: CreateNumpadOptions = {}
+): CreateNumpadInstance {
   const { theme, className, ...domOptions } = options;
 
   // Create the core DOM instance with theme support
