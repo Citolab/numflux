@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numflux - Framework-agnostic numpad component</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .links {
+            margin-top: 1rem;
+        }
+
+        .links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .links a:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .demo-card h2 {
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+
+        .demo-card p {
+            margin-bottom: 1.5rem;
+            color: #666;
+        }
+
+        .numpad-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .output {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f5f5f5;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .output-label {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔢 Numflux</h1>
+            <p class="subtitle">Framework-agnostic numpad component</p>
+            <div class="version-badge">v1.0.0</div>
+            <div class="links">
+                <a href="https://github.com/Citolab/numflux" target="_blank">GitHub</a>
+                <a href="https://www.npmjs.com/package/@citolab/numflux" target="_blank">npm</a>
+                <a href="https://github.com/Citolab/numflux#readme" target="_blank">Documentation</a>
+            </div>
+        </header>
+
+        <div class="demo-grid">
+            <div class="demo-card">
+                <h2>💰 Currency Input (Light)</h2>
+                <p>Perfect for financial applications with 2 decimal places</p>
+                <div class="numpad-container" id="currency-demo"></div>
+                <div class="output">
+                    <div class="output-label">Value:</div>
+                    <div id="currency-output">0.00</div>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <h2>🌙 Dark Theme</h2>
+                <p>Numpad with dark theme styling</p>
+                <div class="numpad-container" id="dark-demo"></div>
+                <div class="output">
+                    <div class="output-label">Value:</div>
+                    <div id="dark-output">0</div>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <h2>📊 Integer Only</h2>
+                <p>No decimal places, perfect for quantities</p>
+                <div class="numpad-container" id="integer-demo"></div>
+                <div class="output">
+                    <div class="output-label">Value:</div>
+                    <div id="integer-output">0</div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Built with ❤️ by CitoLab</p>
+            <p style="margin-top: 0.5rem; opacity: 0.8; font-size: 0.9rem;">
+                Install: <code style="background: rgba(255,255,255,0.2); padding: 0.25rem 0.5rem; border-radius: 4px;">npm install @citolab/numflux</code>
+            </p>
+        </footer>
+    </div>
+
+    <script type="module">
+        // This will be updated to use the actual published package
+        // For now, it shows the structure
+
+        console.log('Numflux Demo Page');
+        console.log('To use the actual numpad, import from @citolab/numflux');
+        console.log('Example: import { createStyledNumpad } from "@citolab/numflux"');
+
+        // Placeholder implementation to show the structure
+        const demos = [
+            { id: 'currency-demo', output: 'currency-output', config: { allowDecimal: 2, theme: 'light' } },
+            { id: 'dark-demo', output: 'dark-output', config: { allowDecimal: 0, theme: 'dark' } },
+            { id: 'integer-demo', output: 'integer-output', config: { allowDecimal: false, theme: 'light' } }
+        ];
+
+        demos.forEach(demo => {
+            const container = document.getElementById(demo.id);
+            const output = document.getElementById(demo.output);
+
+            // Create placeholder
+            const placeholder = document.createElement('div');
+            placeholder.style.cssText = `
+                padding: 2rem;
+                text-align: center;
+                color: #999;
+                border: 2px dashed #ddd;
+                border-radius: 8px;
+                width: 100%;
+            `;
+            placeholder.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔢</div>
+                <div>Numpad will appear here</div>
+                <div style="font-size: 0.8rem; margin-top: 0.5rem;">
+                    Theme: ${demo.config.theme}<br>
+                    Decimals: ${demo.config.allowDecimal === false ? 'No' : demo.config.allowDecimal}
+                </div>
+            `;
+            container.appendChild(placeholder);
+
+            // In production, this would be:
+            // import { createStyledNumpad } from '@citolab/numflux';
+            // const numpad = createStyledNumpad(container, {
+            //     ...demo.config,
+            //     onChange: (state, display) => {
+            //         output.textContent = display.formatted;
+            //     }
+            // });
+        });
+    </script>
+</body>
+</html>

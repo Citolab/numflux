@@ -4,6 +4,8 @@
 
 A TypeScript library that provides a clean, extensible numpad implementation. Built agnostically, it works seamlessly with React, Vue, Angular, vanilla JS, or any other framework.
 
+**[📺 View Live Demo](https://citolab.github.io/numflux/)**
+
 ## ✨ Features
 
 - 🧮 **Pure Logic Core** - Side-effect-free reducer for numpad interactions
