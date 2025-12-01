@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/Citolab/numflux/compare/v1.2.0...v1.3.0) (2025-12-01)
+
+
+### Features
+
+* condense all create methods to a single one, abandon css injection ([2df6056](https://github.com/Citolab/numflux/commit/2df6056040f714184b734343a74025ef3030aa41))
+
 ## [1.2.0](https://github.com/Citolab/numflux/compare/v1.1.0...v1.2.0) (2025-12-01)
 
 
