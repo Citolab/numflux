@@ -11,6 +11,8 @@
   ],
   "scripts": {
     "build": "npm run clean && vite build && tsc --project tsconfig.build.json --emitDeclarationOnly",
+    "build:docs": "npm run build && npm run copy-dist",
+    "copy-dist": "rm -rf docs/dist && cp -r dist docs/dist",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit --project tsconfig.json",
     "test": "vitest run",
