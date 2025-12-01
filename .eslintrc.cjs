@@ -18,7 +18,7 @@ module.exports = {
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "prettier"
   ],
-  ignorePatterns: ["dist", "node_modules"],
+  ignorePatterns: ["dist", "node_modules", "tests"],
   rules: {
     "no-console": "off",
     "@typescript-eslint/explicit-function-return-type": "off"
