@@ -64,6 +64,38 @@ export function normalizeLeadingZeros(value: string, hasDecimal: boolean): strin
 /**
  * Sanitize and normalize a value string according to numpad configuration
  */
+/**
+ * Check if the toggle-sign button should be enabled based on current value and constraints
+ */
+export function canToggleSign(value: string, config: NumpadConfig): boolean {
+  if (!config.allowNegative) return false;
+  if (!value || value === "-") return true;
+
+  const numeric = toNumber(value);
+  if (numeric === null) return true;
+
+  // If current value is positive, check if negative version would be valid
+  if (numeric > 0) {
+    const negativeValue = -numeric;
+    if (config.min !== null && config.min !== undefined && negativeValue < config.min) {
+      return false;
+    }
+    return true;
+  }
+
+  // If current value is negative, check if positive version would be valid
+  if (numeric < 0) {
+    const positiveValue = Math.abs(numeric);
+    if (config.max !== null && config.max !== undefined && positiveValue > config.max) {
+      return false;
+    }
+    return true;
+  }
+
+  // Value is zero, can always toggle
+  return true;
+}
+
 export function sanitizeValue(value: string, config: NumpadConfig): string {
   const normalizedChars: string[] = [];
   let hasDecimal = false;

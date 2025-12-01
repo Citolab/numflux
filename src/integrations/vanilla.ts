@@ -1,4 +1,5 @@
 import { createNumpadDom, type NumpadDomOptions, type NumpadDomInstance } from "@/core/numpad-dom";
+import type { NumpadAction } from "@/types";
 import { applyModuleClasses } from "@/utils";
 
 import { getButtonVariant } from "./utils";
@@ -45,6 +46,18 @@ export function mountNumpad(
     instance.root.classList.add(className);
   }
 
+  const updateButtonClasses = () => {
+    const buttons = instance.keypad.querySelectorAll("button");
+    buttons.forEach((button: HTMLButtonElement) => {
+      const isDisabled = button.disabled;
+      const variant = getButtonVariant(button);
+      
+      // Remove all existing classes and reapply with current disabled state
+      button.className = "";
+      applyModuleClasses(button, styles, ...buildButtonClassNames(variant, isDisabled));
+    });
+  };
+
   // Apply CSS Modules classes to buttons
   const buttons = instance.keypad.querySelectorAll("button");
   buttons.forEach((button) => {
@@ -52,12 +65,24 @@ export function mountNumpad(
     applyModuleClasses(button, styles, ...buildButtonClassNames(variant));
   });
 
+  // Apply initial disabled classes
+  updateButtonClasses();
+
+  // Store original dispatch method to enhance it with disabled class handling
+  const originalDispatch = instance.dispatch;
+  instance.dispatch = (action: NumpadAction) => {
+    const result = originalDispatch(action);
+    updateButtonClasses();
+    return result;
+  };
+
   return instance;
 }
 
-function buildButtonClassNames(variant: "accent" | "ghost" | "default" = "default"): StyleKey[] {
+function buildButtonClassNames(variant: "accent" | "ghost" | "default" = "default", disabled = false): StyleKey[] {
   const classes: StyleKey[] = ["button"];
   if (variant === "accent") classes.push("buttonAccent");
   if (variant === "ghost") classes.push("buttonGhost");
+  if (disabled) classes.push("buttonDisabled");
   return classes;
 }

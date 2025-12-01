@@ -14,6 +14,7 @@ import {
   reduceNumpad
 } from "@/core/numpad";
 import { getDefaultLabel, LABEL_THEMES } from "@/utils";
+import { canToggleSign } from "@/utils/validation.utils";
 
 // Helper function to safely set attributes (compatible with both real DOM and test mocks)
 function safeSetAttribute(element: Element | HTMLElement, name: string, value: string): void {
@@ -160,7 +161,11 @@ export function createNumpadDom(
     safeSetAttribute(button, "role", "gridcell");
     safeSetAttribute(button, "tabindex", "-1");
 
-    button.addEventListener("click", () => dispatch(key.action));
+    button.addEventListener("click", () => {
+      if (!button.disabled) {
+        dispatch(key.action);
+      }
+    });
     keypad.appendChild(button);
   });
 
@@ -171,12 +176,38 @@ export function createNumpadDom(
   }
   target.appendChild(root);
 
+  const updateButtonStates = () => {
+    const buttons = keypad.querySelectorAll("button");
+    buttons.forEach((button) => {
+      const action = button.dataset.action;
+      let isDisabled = false;
+
+      if (action === "toggle-sign") {
+        isDisabled = !canToggleSign(state.value, config);
+      } else if (action === "decimal") {
+        isDisabled = !config.allowDecimal;
+      }
+
+      button.disabled = isDisabled;
+      // Use data attribute so integrations can style based on this
+      if (isDisabled) {
+        button.dataset.disabled = "true";
+      } else {
+        delete button.dataset.disabled;
+      }
+      
+      safeSetAttribute(button, "aria-disabled", isDisabled ? "true" : "false");
+      safeSetAttribute(button, "tabindex", isDisabled ? "-1" : "-1"); // Keep -1 for grid navigation
+    });
+  };
+
   const updateDisplay = () => {
     const displayValue = formatDisplayValue(state, config);
     display.dataset.raw = displayValue.raw;
     display.textContent = displayValue.formatted || "0";
     safeSetAttribute(display, "aria-valuenow", displayValue.numeric?.toString() || "");
     safeSetAttribute(display, "aria-valuetext", displayValue.formatted || "empty");
+    updateButtonStates();
   };
 
   const announceChange = (action: NumpadAction, newValue: string) => {
