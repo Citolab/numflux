@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/Citolab/numflux/compare/v1.1.0...v1.2.0) (2025-12-01)
+
+
+### Features
+
+* make sure docs include stylesheet ([c8ba147](https://github.com/Citolab/numflux/commit/c8ba14739359d322397e6a766319d5bcb90682d1))
+
 ## [1.1.0](https://github.com/Citolab/numflux/compare/v1.0.0...v1.1.0) (2025-12-01)
 
 
