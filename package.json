@@ -10,7 +10,7 @@
     "src/styles"
   ],
   "scripts": {
-    "build": "npm run clean && tsc --project tsconfig.build.json",
+    "build": "npm run clean && vite build && tsc --project tsconfig.build.json --emitDeclarationOnly",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit --project tsconfig.json",
     "test": "vitest run",
