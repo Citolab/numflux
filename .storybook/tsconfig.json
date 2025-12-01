@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.json",
+  "include": ["../src/**/*.stories.ts", "./main.ts", "./preview.ts"],
+  "compilerOptions": {
+    "types": ["node"],
+    "rootDir": "..",
+    "outDir": "../dist-storybook"
+  }
+}

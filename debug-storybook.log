@@ -1,0 +1,46 @@
+[11:14:12.940] [INFO] storybook v10.1.2
+[11:14:13.906] [DEBUG] Getting package.json info for /Users/denisebroekman/Workspace/numflux/package.json...
+[11:14:13.906] [WARN] You are currently using Storybook [1m10.1.2[22m but you have packages which are incompatible with it:
+
+- @storybook/addon-essentials@7.6.20 which depends on 7.6.20
+ Repo: https://github.com/storybookjs/storybook/tree/next/code/addons/essentials
+- @storybook/addon-interactions@7.6.20 which depends on 7.6.20
+ Repo: https://github.com/storybookjs/storybook/tree/next/code/addons/interactions
+- @storybook/test@7.6.20 which depends on 7.6.20
+ Repo: https://github.com/storybookjs/storybook/tree/next/code/lib/test
+
+Please consider updating your packages or contacting the maintainers for compatibility details.
+
+For more details on compatibility guidance, see:
+https://github.com/storybookjs/storybook/issues/32836
+[11:14:13.912] [ERROR] [38;2;241;97;97mSB_CORE-SERVER_0002 (CriticalPresetLoadError): Storybook failed to load the following preset: @storybook/html-vite/preset.
+
+Please check whether your setup is correct, the Storybook dependencies (and their peer dependencies) are installed correctly and there are no package version clashes.
+
+If you believe this is a bug, please open an issue on Github.
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@storybook/html-vite' imported from /Users/denisebroekman/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/_node-chunks/chunk-GKZHMXCG.js
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:268:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:858:18)
+    at defaultResolve (node:internal/modules/esm/resolve:990:11)
+    at nextResolve (node:internal/modules/esm/hooks:748:28)
+    at Hooks.resolve (node:internal/modules/esm/hooks:240:30)
+    at MessagePort.handleMessage (node:internal/modules/esm/worker:201:24)
+    at [nodejs.internal.kHybridDispatch] (node:internal/event_target:827:20)
+    at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28)
+
+More info: 
+[39m
+    at loadPreset (file:///Users/denisebroekman/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/_node-chunks/chunk-2ROLNOX5.js:10101:13)
+    at async Promise.all (index 0)
+    at async loadPresets (file:///Users/denisebroekman/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/_node-chunks/chunk-2ROLNOX5.js:10110:73)
+    at async getPresets (file:///Users/denisebroekman/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/_node-chunks/chunk-2ROLNOX5.js:10141:23)
+    at async buildDevStandalone (file:///Users/denisebroekman/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/core-server/index.js:7537:17)
+    at async withTelemetry (file:///Users/denisebroekman/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/_node-chunks/chunk-U5ZVDYGC.js:205:12)
+    at async dev (file:///Users/denisebroekman/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/bin/core.js:2734:3)
+    at async _Command.<anonymous> (file:///Users/denisebroekman/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/bin/core.js:2795:92)
+[11:14:13.912] [WARN] Broken build, fix the error above.
+You may need to refresh the browser.
+[11:14:21.391] [PROMPT] Would you like to send anonymous crash reports to improve Storybook and fix bugs faster? {"choice":false}
+[11:14:21.393] [INFO] Storybook collects completely anonymous usage telemetry. We use it to shape Storybook's roadmap and prioritize features. You can learn more, including how to opt out, at https://storybook.js.org/telemetry
