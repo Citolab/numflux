@@ -20,12 +20,12 @@ A TypeScript library that provides a clean, extensible numpad implementation. Bu
 
 ## Features
 
-- 🧮 **Pure Logic Core** - Side-effect-free reducer for numpad interactions
-- ⚙️ **Highly Configurable** - Decimal places, validation, theming, custom separators, custom icon integration
-- 🌐 **Framework Agnostic** - Works with React, Vue, Angular, Svelte, vanilla JS, or any other framework
-- 📦 **Zero Dependencies** - Tiny bundle size, no runtime dependencies
-- ✨ **Flexible Styling** - Use default styles, CSS Modules, custom CSS, or whatever you like
-- ♿ **Accessible** - WCAG 2.1 AA compliant with screen reader support
+- **Pure Core** - Side-effect-free reducer for numpad interactions
+- **Configurable** - Decimal places, validation, theming, custom separators, custom icon integration
+- **Framework Agnostic** - Works with React, Vue, Angular, Svelte, vanilla JS, or any other framework
+- **Zero Dependencies** - Tiny bundle size, no runtime dependencies
+- **Flexible Styling** - Use default styles, CSS Modules, custom CSS, tailwind, or whatever you like
+- **Accessible** - WCAG 2.1 AA compliant with screen reader support
 
 ## Quick Start
 
@@ -279,7 +279,7 @@ const numpad = createNumpad(container, {
 ## Framework Integration
 
 <details>
-<summary><strong>⚛️ React</strong></summary>
+<summary><strong>React</strong></summary>
 
 ```typescript
 import { useEffect, useRef } from "react";
@@ -361,7 +361,7 @@ function ReactNumpad() {
 </details>
 
 <details>
-<summary><strong>🟢 Vue</strong></summary>
+<summary><strong>Vue</strong></summary>
 
 ```vue
 <template>
@@ -400,7 +400,7 @@ onUnmounted(() => {
 </details>
 
 <details>
-<summary><strong>🅰️ Angular</strong></summary>
+<summary><strong>Angular</strong></summary>
 
 ```typescript
 import { Component, ElementRef, Input, Output, EventEmitter, AfterViewInit, OnDestroy } from '@angular/core';
@@ -441,7 +441,7 @@ export class NumpadComponent implements AfterViewInit, OnDestroy {
 </details>
 
 <details>
-<summary><strong>🔥 Svelte</strong></summary>
+<summary><strong>Svelte</strong></summary>
 
 ```svelte
 <script>
@@ -479,7 +479,7 @@ export class NumpadComponent implements AfterViewInit, OnDestroy {
 </details>
 
 <details>
-<summary><strong>🎨 Styling Framework Integration</strong></summary>
+<summary><strong>Styling Options</strong></summary>
 
 **Tailwind CSS:**
 ```typescript
@@ -524,7 +524,7 @@ function createCustomNumpad(container, theme, options) {
 ## Advanced Usage
 
 <details>
-<summary><strong>🧩 Composable Utilities</strong></summary>
+<summary><strong>Composable Utilities</strong></summary>
 
 Create custom integrations using composable utilities:
 
@@ -571,7 +571,7 @@ const numpad = createCustomNumpad(
 </details>
 
 <details>
-<summary><strong>🎯 Custom Validation</strong></summary>
+<summary><strong>Custom Validation</strong></summary>
 
 ```typescript
 import { createNumpad } from "@citolab/numflux";
@@ -602,7 +602,7 @@ const numpad = createNumpad(container, {
 </details>
 
 <details>
-<summary><strong>🔄 Real-time Sync</strong></summary>
+<summary><strong>Real-time Sync</strong></summary>
 
 ```typescript
 import { createNumpad } from "@citolab/numflux";
@@ -626,7 +626,7 @@ const numpad = createNumpad(container, {
 ## API Reference
 
 <details>
-<summary><strong>📦 Core Exports</strong></summary>
+<summary><strong>Core Exports</strong></summary>
 
 ```typescript
 // Pure state management
@@ -673,7 +673,7 @@ import {
 </details>
 
 <details>
-<summary><strong>⚙️ Configuration Options</strong></summary>
+<summary><strong>Configuration Options</strong></summary>
 
 ```typescript
 interface NumpadConfig {
@@ -706,7 +706,7 @@ interface NumpadConfig {
 </details>
 
 <details>
-<summary><strong>🎬 Actions & State</strong></summary>
+<summary><strong>Actions & State</strong></summary>
 
 ```typescript
 // Available actions
@@ -739,7 +739,7 @@ interface DisplayValue {
 ## Contributing
 
 <details>
-<summary><strong>🚀 Development Setup</strong></summary>
+<summary><strong>Development Setup</strong></summary>
 
 ```bash
 # Clone and install
@@ -760,7 +760,7 @@ npm run storybook    # Start Storybook playground
 </details>
 
 <details>
-<summary><strong>🧪 Testing</strong></summary>
+<summary><strong>Testing</strong></summary>
 
 - **Unit Tests**: Comprehensive test suite with 100+ tests
 - **Integration Tests**: Real DOM testing with jsdom
@@ -768,15 +768,15 @@ npm run storybook    # Start Storybook playground
 - **Visual Tests**: Storybook for component testing
 
 ```bash
-npm test                    # Run all tests
-npm run test:coverage       # Generate coverage report
+npm test                   # Run all tests
+npm run test:coverage      # Generate coverage report
 npm run test:ui            # Open Vitest UI
 ```
 
 </details>
 
 <details>
-<summary><strong>📝 Project Structure</strong></summary>
+<summary><strong>Project Structure</strong></summary>
 
 ```
 src/
@@ -805,8 +805,6 @@ src/
 |-------------|----------|-------------|-------------------|
 | `createNumpad` | **Most projects** - Styled numpad with themes | ~8kb gzipped | ✅ Yes |
 | `createNumpadDom` | Custom styling, framework integration | ~6kb gzipped | ✅ Yes (your styles) |
-
-**📋 Recommendation:** Start with `createNumpad` for the best developer experience!
 
 ---
 
