@@ -14,7 +14,9 @@ import {
   reduceNumpad
 } from "@/core/numpad";
 import { getDefaultLabel, LABEL_THEMES } from "@/utils";
-import { canToggleSign } from "@/utils/validation.utils";
+import { canToggleSign, canAddDigit } from "@/utils/validation.utils";
+import { createMaskDisplay, type MaskDisplayElement } from "@/core/numpad-mask";
+import { parseMask, isMaskComplete } from "@/utils/mask.utils";
 
 // Helper function to safely set attributes (compatible with both real DOM and test mocks)
 function safeSetAttribute(element: Element | HTMLElement, name: string, value: string): void {
@@ -60,6 +62,8 @@ export interface NumpadDomOptions extends Partial<NumpadConfig>, Partial<NumpadO
     /** Announce value changes to screen readers */
     announceChanges?: boolean;
   };
+  /** Locale for mask display (affects decimal separator) */
+  locale?: string;
 }
 
 export interface NumpadDomInstance {
@@ -67,6 +71,7 @@ export interface NumpadDomInstance {
   display: HTMLElement;
   keypad: HTMLElement;
   announcer?: HTMLElement;
+  maskDisplay?: MaskDisplayElement;
   dispatch: (action: NumpadAction) => NumpadState;
   getState: () => NumpadState;
   destroy: () => void;
@@ -122,6 +127,23 @@ export function createNumpadDom(
   safeSetAttribute(display, "aria-readonly", "true");
   safeSetAttribute(display, "aria-label", "Current value");
 
+  // Create mask display if mask is configured
+  let maskDisplay: MaskDisplayElement | undefined;
+  if (config.mask) {
+    try {
+      const maskFormat = parseMask(config.mask);
+      const locale =
+        options.locale || (typeof navigator !== "undefined" ? navigator.language : "en-US");
+      maskDisplay = createMaskDisplay(maskFormat, {
+        showCharacterSlots: true,
+        charWidth: "1.2ch",
+        locale
+      });
+    } catch (error) {
+      console.warn("Failed to create mask display:", error);
+    }
+  }
+
   const keypad = document.createElement("div");
   keypad.className = "numflux-keypad";
   safeSetAttribute(keypad, "role", "grid");
@@ -174,6 +196,12 @@ export function createNumpadDom(
   if (announcer) {
     root.appendChild(announcer);
   }
+
+  // Append mask display to the display container if available
+  if (maskDisplay) {
+    display.appendChild(maskDisplay.container);
+  }
+
   target.appendChild(root);
 
   const updateButtonStates = () => {
@@ -186,6 +214,23 @@ export function createNumpadDom(
         isDisabled = !canToggleSign(state.value, config);
       } else if (action === "decimal") {
         isDisabled = !config.allowDecimal;
+      } else if (action?.startsWith("digit:")) {
+        const digit = parseInt(action.split(":")[1]);
+
+        // Check mask completion first
+        if (config.mask && state.maskState) {
+          try {
+            const maskFormat = parseMask(config.mask);
+            isDisabled = isMaskComplete(state.maskState, maskFormat);
+          } catch {
+            isDisabled = false;
+          }
+        }
+
+        // If not disabled by mask, check value constraints
+        if (!isDisabled && !isNaN(digit)) {
+          isDisabled = !canAddDigit(state.value, digit, config);
+        }
       }
 
       button.disabled = isDisabled;
@@ -195,7 +240,7 @@ export function createNumpadDom(
       } else {
         delete button.dataset.disabled;
       }
-      
+
       safeSetAttribute(button, "aria-disabled", isDisabled ? "true" : "false");
       safeSetAttribute(button, "tabindex", isDisabled ? "-1" : "-1"); // Keep -1 for grid navigation
     });
@@ -204,7 +249,38 @@ export function createNumpadDom(
   const updateDisplay = () => {
     const displayValue = formatDisplayValue(state, config);
     display.dataset.raw = displayValue.raw;
-    display.textContent = displayValue.formatted || "0";
+
+    // Update validation error state
+    if (state.validationError) {
+      display.dataset.error = state.validationError;
+      safeSetAttribute(display, "aria-invalid", "true");
+      safeSetAttribute(display, "aria-describedby", `${display.id || "numflux-display"}-error`);
+    } else {
+      delete display.dataset.error;
+      safeSetAttribute(display, "aria-invalid", "false");
+      safeSetAttribute(display, "aria-describedby", "");
+    }
+
+    // Update mask display if available
+    if (maskDisplay && state.maskState) {
+      // Clear any text content from the display element when using mask
+      if (
+        display.childNodes.length > 1 ||
+        (display.childNodes.length === 1 && display.childNodes[0] !== maskDisplay.container)
+      ) {
+        // Remove text nodes, keep only mask display
+        Array.from(display.childNodes).forEach((node) => {
+          if (node !== maskDisplay.container) {
+            display.removeChild(node);
+          }
+        });
+      }
+      maskDisplay.update(state.maskState);
+    } else {
+      // Standard display without mask
+      display.textContent = displayValue.formatted || "0";
+    }
+
     safeSetAttribute(display, "aria-valuenow", displayValue.numeric?.toString() || "");
     safeSetAttribute(display, "aria-valuetext", displayValue.formatted || "empty");
     updateButtonStates();
@@ -285,6 +361,9 @@ export function createNumpadDom(
 
   const destroy = () => {
     root.removeEventListener("keydown", handleKeydown);
+    if (maskDisplay) {
+      maskDisplay.destroy();
+    }
     root.remove();
   };
 
@@ -293,6 +372,7 @@ export function createNumpadDom(
     display,
     keypad,
     announcer,
+    maskDisplay,
     dispatch,
     getState: () => state,
     destroy

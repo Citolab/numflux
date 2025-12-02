@@ -1,3 +1,2 @@
-export * from "./icons";
-export * from "./styled";
-export * from "./vanilla";
+export * from "./global-styles";
+export * from "./css-modules";

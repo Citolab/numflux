@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-import { mountNumpad, type VanillaNumpadInstance } from "@/integrations/vanilla";
+import { mountNumpad, type CssModulesNumpadInstance } from "@/integrations/css-modules";
 
 vi.mock("@/styles/numpad.module.css", () => ({
   default: {
@@ -77,7 +77,7 @@ Object.defineProperty(global, "document", {
 
 describe("mountNumpad", () => {
   let container: HTMLElement;
-  let numpad: VanillaNumpadInstance;
+  let numpad: CssModulesNumpadInstance;
 
   beforeEach(() => {
     // Reset all mocks

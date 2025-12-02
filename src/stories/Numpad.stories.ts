@@ -4,8 +4,6 @@ import { action } from "@storybook/addon-actions";
 import { mountNumpad, type CssModulesNumpadOptions } from "@/integrations/css-modules";
 import type { NumpadState, DisplayValue } from "@/types/numpad";
 
-import "@/styles/numpad.module.css";
-
 type StoryArgs = CssModulesNumpadOptions;
 type ActionLogger = (data: { state: NumpadState; display: DisplayValue }) => void;
 
@@ -22,12 +20,13 @@ const logChange = createActionLogger("change");
 const logSubmit = createActionLogger("submit");
 
 const meta: Meta<StoryArgs> = {
-  title: "Numpad",
+  title: "Numpad/Default",
   args: {
     initialValue: "",
     allowDecimal: true,
     allowNegative: true,
     maxDigits: null,
+    minDigits: null,
     decimalSeparator: ".",
     minValue: null,
     maxValue: null,
@@ -35,6 +34,7 @@ const meta: Meta<StoryArgs> = {
   },
   argTypes: {
     maxDigits: { control: { type: "number" } },
+    minDigits: { control: { type: "number" } },
     decimalSeparator: { control: { type: "text" } },
     minValue: { control: { type: "number" } },
     maxValue: { control: { type: "number" } },
@@ -45,19 +45,11 @@ const meta: Meta<StoryArgs> = {
     },
     theme: {
       control: { type: "select" },
-      options: [undefined, "light", "dark"]
+      options: [undefined, "dark", "light"]
     },
     labelTheme: {
       control: { type: "select" },
       options: [undefined, "ascii", "unicode", "symbols", "minimal"]
-    },
-    mask: {
-      control: { type: "text" },
-      description: "Mask format string (e.g., '___', '__/___', '__,__')"
-    },
-    locale: {
-      control: { type: "text" },
-      description: "Locale for decimal separator (e.g., 'en-US', 'nl-NL')"
     }
   },
   render: (args: StoryArgs): HTMLElement => {
@@ -69,8 +61,8 @@ const meta: Meta<StoryArgs> = {
 
     mountNumpad(target, {
       ...args,
-      onChange: (state: NumpadState, display: DisplayValue) => logChange({ state, display }),
-      onSubmit: (state: NumpadState, display: DisplayValue) => logSubmit({ state, display })
+      onChange: (state: any, display: any) => logChange({ state, display }),
+      onSubmit: (state: any, display: any) => logSubmit({ state, display })
     });
 
     return container;
@@ -126,15 +118,21 @@ export const SyncMode: Story = {
 
 export const CurrencyExample: Story = {
   args: {
-    mask: "€ ____,__",
-    initialValue: ""
+    allowDecimal: 2,
+    allowNegative: false,
+    minValue: 0,
+    maxValue: 9999.99,
+    initialValue: "123.45"
   }
 };
 
 export const PercentageExample: Story = {
   args: {
-    mask: "__,__ %",
-    initialValue: ""
+    allowDecimal: 2,
+    allowNegative: false,
+    minValue: 0,
+    maxValue: 100,
+    initialValue: "85.5"
   }
 };
 
@@ -148,7 +146,14 @@ export const LightTheme: Story = {
 export const DarkTheme: Story = {
   args: {
     theme: "dark",
-    initialValue: "456.78"
+    initialValue: "999"
+  }
+};
+
+export const AsciiLabels: Story = {
+  args: {
+    labelTheme: "ascii",
+    initialValue: "123"
   }
 };
 
@@ -166,6 +171,13 @@ export const SymbolLabels: Story = {
   }
 };
 
+export const MinimalLabels: Story = {
+  args: {
+    labelTheme: "minimal",
+    initialValue: "999"
+  }
+};
+
 export const CustomLabels: Story = {
   args: {
     labelTheme: "unicode",
@@ -176,5 +188,62 @@ export const CustomLabels: Story = {
       toggleSign: "Flip"
     },
     initialValue: "100"
+  }
+};
+
+export const ValidationErrors: Story = {
+  args: {
+    minValue: 10,
+    maxValue: 50,
+    minDigits: 2,
+    maxDigits: 4,
+    allowDecimal: true,
+    allowNegative: true,
+    initialValue: "75", // This should trigger maxValue error
+    sync: true // Enable sync mode to see validation errors immediately
+  }
+};
+
+export const DigitConstraints: Story = {
+  args: {
+    minDigits: 3,
+    maxDigits: 6,
+    allowDecimal: false,
+    allowNegative: false,
+    initialValue: "12", // Should show minDigits error
+    sync: true
+  }
+};
+
+export const MinValueValidation: Story = {
+  args: {
+    minValue: 25,
+    maxValue: 100,
+    allowDecimal: true,
+    allowNegative: true,
+    initialValue: "10", // This should trigger minValue error (10 < 25)
+    sync: true // Enable sync mode to see validation errors immediately
+  }
+};
+
+export const NegativeRangeValidation: Story = {
+  args: {
+    minValue: -50,
+    maxValue: -10,
+    allowDecimal: true,
+    allowNegative: true,
+    initialValue: "-75", // This should trigger minValue error (-75 < -50)
+    sync: true
+  }
+};
+
+export const PreciseDecimalValidation: Story = {
+  args: {
+    minValue: 99.95,
+    maxValue: 100.05,
+    allowDecimal: 2,
+    allowNegative: false,
+    initialValue: "99.90", // This should trigger minValue error (99.90 < 99.95)
+    sync: true
   }
 };

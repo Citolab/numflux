@@ -47,20 +47,20 @@ describe("getDecimalPlaces", () => {
 
 describe("isValidValue", () => {
   it("should return true for empty values", () => {
-    const config = normalizeConfig({ min: 0, max: 100 });
+    const config = normalizeConfig({ minValue: 0, maxValue: 100 });
     expect(isValidValue("", config)).toBe(true);
     expect(isValidValue("-", config)).toBe(true);
   });
 
   it("should validate min constraint", () => {
-    const config = normalizeConfig({ min: 10, max: 100 });
+    const config = normalizeConfig({ minValue: 10, maxValue: 100 });
     expect(isValidValue("15", config)).toBe(true);
     expect(isValidValue("5", config)).toBe(false);
     expect(isValidValue("10", config)).toBe(true); // equal to min
   });
 
   it("should validate max constraint", () => {
-    const config = normalizeConfig({ min: 0, max: 100 });
+    const config = normalizeConfig({ minValue: 0, maxValue: 100 });
     expect(isValidValue("50", config)).toBe(true);
     expect(isValidValue("150", config)).toBe(false);
     expect(isValidValue("100", config)).toBe(true); // equal to max
@@ -73,9 +73,41 @@ describe("isValidValue", () => {
   });
 
   it("should handle decimal values", () => {
-    const config = normalizeConfig({ min: 0, max: 100.5 });
+    const config = normalizeConfig({ minValue: 0, maxValue: 100.5 });
     expect(isValidValue("50.25", config)).toBe(true);
     expect(isValidValue("100.75", config)).toBe(false);
+  });
+
+  it("should validate minValue with positive numbers", () => {
+    const config = normalizeConfig({ minValue: 25 });
+    expect(isValidValue("30", config)).toBe(true);
+    expect(isValidValue("25", config)).toBe(true); // equal to minValue
+    expect(isValidValue("20", config)).toBe(false);
+    expect(isValidValue("0", config)).toBe(false);
+  });
+
+  it("should validate minValue with negative numbers", () => {
+    const config = normalizeConfig({ minValue: -50, maxValue: -10 });
+    expect(isValidValue("-20", config)).toBe(true);
+    expect(isValidValue("-50", config)).toBe(true); // equal to minValue
+    expect(isValidValue("-60", config)).toBe(false);
+    expect(isValidValue("-100", config)).toBe(false);
+  });
+
+  it("should validate minValue with decimal precision", () => {
+    const config = normalizeConfig({ minValue: 99.95, maxValue: 100.05 });
+    expect(isValidValue("100.00", config)).toBe(true);
+    expect(isValidValue("99.95", config)).toBe(true); // equal to minValue
+    expect(isValidValue("99.94", config)).toBe(false);
+    expect(isValidValue("99.90", config)).toBe(false);
+  });
+
+  it("should work with only minValue constraint", () => {
+    const config = normalizeConfig({ minValue: 10 });
+    expect(isValidValue("15", config)).toBe(true);
+    expect(isValidValue("10", config)).toBe(true);
+    expect(isValidValue("5", config)).toBe(false);
+    expect(isValidValue("1000", config)).toBe(true); // no maxValue limit
   });
 });
 

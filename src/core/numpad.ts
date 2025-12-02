@@ -1,20 +1,75 @@
+import { sanitizeValue, toNumber } from "@/utils/validation.utils";
+import {
+  parseMask,
+  createMaskState,
+  appendDigitToMask,
+  deleteCharFromMask,
+  clearMask,
+  formatMaskValue,
+  getMaskRawValue
+} from "@/utils/mask.utils";
+
 import type {
   DisplayValue,
   NumpadAction,
   NumpadConfig,
   NumpadDigit,
-  NumpadState
+  NumpadState,
+  ValidationError
 } from "@/types/numpad";
-import { sanitizeValue, toNumber } from "@/utils/validation.utils";
+import type { MaskFormat, MaskState } from "@/types/mask";
+
+/**
+ * Validate a numeric value against configuration constraints
+ */
+function validateValue(value: string, config: NumpadConfig): ValidationError {
+  if (!value || value === "-") return null;
+
+  const numericValue = toNumber(value);
+  if (numericValue === null) return null;
+
+  // Check minValue constraint
+  if (config.minValue !== null && config.minValue !== undefined && numericValue < config.minValue) {
+    return "minValue";
+  }
+
+  // Check maxValue constraint
+  if (config.maxValue !== null && config.maxValue !== undefined && numericValue > config.maxValue) {
+    return "maxValue";
+  }
+
+  // Check digit count constraints
+  const digitCount = value.replace(/[-.]/g, "").length;
+
+  if (
+    config.minDigits !== null &&
+    config.minDigits !== undefined &&
+    digitCount < config.minDigits
+  ) {
+    return "minDigits";
+  }
+
+  if (
+    config.maxDigits !== null &&
+    config.maxDigits !== undefined &&
+    digitCount > config.maxDigits
+  ) {
+    return "maxDigits";
+  }
+
+  return null;
+}
 
 const DEFAULT_CONFIG: NumpadConfig = {
   allowDecimal: true,
   allowNegative: true,
   maxDigits: null,
+  minDigits: null,
   decimalSeparator: ".",
-  min: null,
-  max: null,
-  sync: false
+  minValue: null,
+  maxValue: null,
+  sync: false,
+  mask: undefined
 };
 
 export function normalizeConfig(config: Partial<NumpadConfig> = {}): NumpadConfig {
@@ -25,9 +80,112 @@ export function createNumpadState(
   initialValue = "",
   config: Partial<NumpadConfig> = {}
 ): NumpadState {
-  const normalized = sanitizeValue(initialValue, normalizeConfig(config));
-  return { value: normalized, isPristine: true };
+  const normalizedConfig = normalizeConfig(config);
+
+  // Check if mask mode is enabled
+  if (normalizedConfig.mask) {
+    try {
+      const maskFormat = parseMask(normalizedConfig.mask);
+      const maskState = createMaskState(maskFormat, initialValue);
+      const value = getMaskRawValue(maskState, maskFormat);
+
+      return {
+        value,
+        isPristine: true,
+        maskState,
+        validationError: validateValue(value, normalizedConfig)
+      };
+    } catch (error) {
+      console.warn("Invalid mask format, falling back to standard mode:", error);
+    }
+  }
+
+  // Standard mode
+  const normalized = sanitizeValue(initialValue, normalizedConfig);
+  return {
+    value: normalized,
+    isPristine: true,
+    validationError: validateValue(normalized, normalizedConfig)
+  };
 }
+
+type MaskActionHandler = (
+  state: NumpadState,
+  action: NumpadAction,
+  maskFormat: MaskFormat
+) => { value: string; maskState: MaskState };
+
+type StandardActionHandler = (
+  state: NumpadState,
+  action: NumpadAction,
+  config: NumpadConfig
+) => Pick<NumpadState, "value">;
+
+// Action handlers for mask mode
+const maskActionHandlers: Record<string, MaskActionHandler> = {
+  digit: (state, action, maskFormat) => {
+    // maskState must exist when these handlers are called
+    const maskState = (state.maskState ?? createMaskState(maskFormat, state.value)) as MaskState;
+
+    if (action.type !== "digit") {
+      return { value: state.value, maskState };
+    }
+    const newMaskState = appendDigitToMask(maskState, action.digit, maskFormat);
+    return {
+      value: getMaskRawValue(newMaskState, maskFormat),
+      maskState: newMaskState
+    };
+  },
+  delete: (state, _action, maskFormat) => {
+    // maskState must exist when these handlers are called
+    const maskState = (state.maskState ?? createMaskState(maskFormat, state.value)) as MaskState;
+
+    const newMaskState = deleteCharFromMask(maskState, maskFormat);
+    return {
+      value: getMaskRawValue(newMaskState, maskFormat),
+      maskState: newMaskState
+    };
+  },
+  clear: (_state, _action, maskFormat) => {
+    const newMaskState = clearMask(maskFormat);
+    return {
+      value: getMaskRawValue(newMaskState, maskFormat),
+      maskState: newMaskState
+    };
+  },
+  set: (_state, action, maskFormat) => {
+    const value = action.type === "set" ? action.value : "";
+    const newMaskState = createMaskState(maskFormat, value);
+    return {
+      value: getMaskRawValue(newMaskState, maskFormat),
+      maskState: newMaskState
+    };
+  }
+};
+
+// Action handlers for standard mode
+const standardActionHandlers: Record<string, StandardActionHandler> = {
+  digit: (state, action, config) => {
+    if (action.type !== "digit") return { value: state.value };
+    return { value: appendDigit(state.value, action.digit, config) };
+  },
+  decimal: (state, _action, config) => ({
+    value: appendDecimal(state.value, config)
+  }),
+  delete: (state) => ({
+    value: deleteChar(state.value)
+  }),
+  clear: () => ({
+    value: ""
+  }),
+  "toggle-sign": (state, _action, config) => ({
+    value: toggleSign(state.value, config)
+  }),
+  set: (_state, action, config) => {
+    if (action.type !== "set") return { value: "" };
+    return { value: sanitizeValue(action.value, config) };
+  }
+};
 
 export function reduceNumpad(
   state: NumpadState,
@@ -37,24 +195,40 @@ export function reduceNumpad(
   const normalizedConfig = normalizeConfig(config);
   const next: NumpadState = { ...state, lastAction: action.type, isPristine: false };
 
-  switch (action.type) {
-    case "digit":
-      return { ...next, value: appendDigit(state.value, action.digit, normalizedConfig) };
-    case "decimal":
-      return { ...next, value: appendDecimal(state.value, normalizedConfig) };
-    case "delete":
-      return { ...next, value: deleteChar(state.value) };
-    case "clear":
-      return { ...next, value: "" };
-    case "toggle-sign":
-      return { ...next, value: toggleSign(state.value, normalizedConfig) };
-    case "set":
-      return { ...next, value: sanitizeValue(action.value, normalizedConfig) };
-    case "submit":
-      return next;
-    default:
-      return next;
+  // Submit action returns immediately
+  if (action.type === "submit") {
+    return next;
   }
+
+  // Mask mode
+  if (normalizedConfig.mask && state.maskState) {
+    try {
+      const maskFormat = parseMask(normalizedConfig.mask);
+      const handler = maskActionHandlers[action.type];
+
+      if (handler) {
+        const updates = handler(state, action, maskFormat);
+        const validationError = validateValue(updates.value, normalizedConfig);
+        return { ...next, ...updates, validationError };
+      }
+
+      // Unsupported actions in mask mode (decimal, toggle-sign)
+      return next;
+    } catch (error) {
+      console.warn("Mask operation failed:", error);
+      return next;
+    }
+  }
+
+  // Standard mode
+  const handler = standardActionHandlers[action.type];
+  if (handler) {
+    const updates = handler(state, action, normalizedConfig);
+    const validationError = validateValue(updates.value, normalizedConfig);
+    return { ...next, ...updates, validationError };
+  }
+
+  return next;
 }
 
 export function mapKeyToAction(
@@ -110,10 +284,44 @@ export function formatDisplayValue(
 ): DisplayValue {
   const normalizedConfig = normalizeConfig(config);
   const raw = state.value;
+
+  // Mask mode formatting
+  if (typeof normalizedConfig.mask === "string" && state.maskState) {
+    try {
+      const maskFormat = parseMask(normalizedConfig.mask);
+      const formatted = formatMaskValue(state.maskState as MaskState, maskFormat);
+
+      // For mask mode, numeric conversion depends on type
+      let numeric: number | null = null;
+      if (maskFormat.type === "decimal") {
+        // Convert decimal format to standard decimal number
+        const decimalValue = raw.replace(",", ".");
+        numeric = toNumber(decimalValue);
+      } else if (maskFormat.type === "simple") {
+        numeric = toNumber(raw);
+      }
+      // For fractions, numeric stays null as it's not a simple number
+
+      return { raw, formatted, numeric };
+    } catch (error) {
+      console.warn("Mask formatting failed:", error);
+    }
+  }
+
+  // Standard mode formatting
   let formatted =
     normalizedConfig.decimalSeparator === "."
       ? raw
       : raw.replace(".", normalizedConfig.decimalSeparator);
+
+  // Pad decimal places if allowDecimal is a number
+  if (typeof normalizedConfig.allowDecimal === "number" && normalizedConfig.allowDecimal > 0) {
+    formatted = padDecimalPlaces(
+      formatted,
+      normalizedConfig.allowDecimal,
+      normalizedConfig.decimalSeparator
+    );
+  }
 
   // Apply custom display rule if provided
   if (displayRule) {
@@ -132,13 +340,31 @@ export function formatDisplayValue(
   return { raw, formatted, numeric };
 }
 
+/**
+ * Pad decimal places with zeros to match the specified precision
+ */
+function padDecimalPlaces(value: string, decimalPlaces: number, separator: string): string {
+  if (!value) return `0${separator}${"0".repeat(decimalPlaces)}`;
+
+  const [integerPart = "0", fractionalPart = ""] = value.split(separator);
+
+  // Pad fractional part with zeros
+  const paddedFractional = fractionalPart.padEnd(decimalPlaces, "0");
+
+  return `${integerPart}${separator}${paddedFractional}`;
+}
+
 function appendDigit(current: string, digit: NumpadDigit, config: NumpadConfig): string {
   const isNegative = current.startsWith("-");
   const unsigned = isNegative ? current.slice(1) : current;
   const hasDecimal = unsigned.includes(".");
   const digitCount = unsigned.replace(".", "").length;
 
-  if (config.maxDigits !== null && digitCount >= config.maxDigits) {
+  if (
+    config.maxDigits !== null &&
+    config.maxDigits !== undefined &&
+    digitCount >= config.maxDigits
+  ) {
     return current;
   }
 

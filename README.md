@@ -233,6 +233,42 @@ numpad = withClassNames(numpad, {
 
 ---
 
+## 🎭 Mask Syntax
+
+Numflux supports masked input formats for structured values (decimals, fractions, prefixed/suffixed numbers).
+
+**Common mask patterns**
+- `___` — simple integer with three slots
+- `__,__` — decimal with two integer and two fractional slots
+- `__/_` — fraction with a two-digit numerator and one-digit denominator
+- `€ ___,__` — currency with prefix and decimal slots
+- `__ / __ / ____` — segmented values like dates
+
+**Using masks**
+```typescript
+import { createNumpad } from "@citolab/numflux";
+
+const numpad = createNumpad(container, {
+  mask: "€ ___,__",
+  onChange: (state, display) => {
+    // state.value holds the raw numeric string without prefix/suffix
+    console.log("Raw:", state.value);
+    console.log("Formatted:", display.formatted);
+  }
+});
+```
+
+**Behavior**
+- Slots (`_`) enforce length and order; numpad auto-advances segments.
+- Prefixes/suffixes are preserved in the display but excluded from `state.value`.
+- Completion can be checked with `isMaskComplete(maskState, maskFormat)` from `@citolab/numflux`.
+
+**Utilities available**
+- `parseMask(maskString)` — validate and produce a mask format
+- `createMaskState(maskFormat, initialValue)` — seed mask state
+- `formatMaskValue(maskState, maskFormat)` — formatted display string
+- `getMaskRawValue(maskState, maskFormat)` — numeric string without prefix/suffix
+
 ### 🎨 **Custom CSS Variables**
 All approaches support CSS variable customization:
 
@@ -252,7 +288,7 @@ All approaches support CSS variable customization:
 Numflux is WCAG 2.1 AA compliant with comprehensive accessibility features:
 
 ```typescript
-const numpad = createStyledNumpad(container, {
+const numpad = createNumpad(container, {
   // Accessibility configuration
   a11y: {
     label: "Price input calculator",           // Component name

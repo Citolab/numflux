@@ -2,14 +2,18 @@ import { LABEL_KEYS } from "@/constants";
 
 export type NumpadDigit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
+export type ValidationError = "minValue" | "maxValue" | "minDigits" | "maxDigits" | null;
+
 export interface NumpadConfig {
   allowDecimal: boolean | number; // true/false or number of decimal places
   allowNegative: boolean;
-  maxDigits: number | null;
+  minDigits?: number | null; // minimum number of digits required
+  maxDigits?: number | null; // maximum number of digits allowed
   decimalSeparator: string;
-  min?: number | null; // minimum value validation
-  max?: number | null; // maximum value validation
+  minValue?: number | null; // minimum value validation
+  maxValue?: number | null; // maximum value validation
   sync?: boolean; // real-time callbacks vs submit-only
+  mask?: string; // mask format string (e.g., "___", "__/___", "€ __,__")
 }
 
 export type NumpadAction =
@@ -25,6 +29,8 @@ export interface NumpadState {
   value: string;
   isPristine: boolean;
   lastAction?: NumpadAction["type"];
+  maskState?: import("@/types/mask").MaskState; // Optional mask state
+  validationError?: ValidationError; // Current validation error
 }
 
 export interface DisplayValue {

@@ -20,14 +20,16 @@ export function getDecimalPlaces(config: NumpadConfig): number | null {
 }
 
 /**
- * Validate if a value is within the configured min/max bounds
+ * Validate if a value is within the configured minValue/maxValue bounds
  */
 export function isValidValue(value: string, config: NumpadConfig): boolean {
   const numeric = toNumber(value);
   if (numeric === null) return true; // Allow empty/invalid during input
 
-  if (config.min !== null && config.min !== undefined && numeric < config.min) return false;
-  if (config.max !== null && config.max !== undefined && numeric > config.max) return false;
+  if (config.minValue !== null && config.minValue !== undefined && numeric < config.minValue)
+    return false;
+  if (config.maxValue !== null && config.maxValue !== undefined && numeric > config.maxValue)
+    return false;
 
   return true;
 }
@@ -77,7 +79,11 @@ export function canToggleSign(value: string, config: NumpadConfig): boolean {
   // If current value is positive, check if negative version would be valid
   if (numeric > 0) {
     const negativeValue = -numeric;
-    if (config.min !== null && config.min !== undefined && negativeValue < config.min) {
+    if (
+      config.minValue !== null &&
+      config.minValue !== undefined &&
+      negativeValue < config.minValue
+    ) {
       return false;
     }
     return true;
@@ -86,13 +92,48 @@ export function canToggleSign(value: string, config: NumpadConfig): boolean {
   // If current value is negative, check if positive version would be valid
   if (numeric < 0) {
     const positiveValue = Math.abs(numeric);
-    if (config.max !== null && config.max !== undefined && positiveValue > config.max) {
+    if (
+      config.maxValue !== null &&
+      config.maxValue !== undefined &&
+      positiveValue > config.maxValue
+    ) {
       return false;
     }
     return true;
   }
 
   // Value is zero, can always toggle
+  return true;
+}
+
+/**
+ * Check if adding a specific digit would result in a valid value
+ */
+export function canAddDigit(currentValue: string, digit: number, config: NumpadConfig): boolean {
+  // Check maxDigits constraint
+  if (config.maxDigits !== null && config.maxDigits !== undefined) {
+    const digitCount = currentValue.replace(/[^0-9]/g, "").length;
+    if (digitCount >= config.maxDigits) {
+      return false;
+    }
+  }
+
+  // Simulate adding the digit
+  const hypotheticalValue = currentValue + digit.toString();
+  const numeric = toNumber(hypotheticalValue);
+
+  if (numeric === null) return true;
+
+  // Check maxValue constraint
+  if (config.maxValue !== null && config.maxValue !== undefined && numeric > config.maxValue) {
+    return false;
+  }
+
+  // Check minValue constraint (only matters for negative numbers)
+  if (config.minValue !== null && config.minValue !== undefined && numeric < config.minValue) {
+    return false;
+  }
+
   return true;
 }
 
@@ -117,7 +158,7 @@ export function sanitizeValue(value: string, config: NumpadConfig): string {
     }
 
     if (/[0-9]/.test(char)) {
-      if (config.maxDigits !== null && digitCount >= config.maxDigits) {
+      if (config.maxDigits && digitCount >= config.maxDigits) {
         continue;
       }
       normalizedChars.push(char);

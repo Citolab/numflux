@@ -69,6 +69,18 @@
   min-height: var(--nf-button-height);
   letter-spacing: 0.5px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+/* Error state styles */
+.nf-display[data-error] {
+  border-color: #ef4444;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 0 2px rgba(239, 68, 68, 0.1);
+}
+
+.nf-container[data-theme="dark"] .nf-display[data-error] {
+  border-color: #f87171;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 0 2px rgba(248, 113, 113, 0.2);
 }
 
 .nf-keypad {
@@ -160,4 +172,149 @@
   box-shadow: var(--nf-button-shadow);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.16));
   border-color: var(--nf-border);
+}
+
+/* Mask styles */
+.numflux-mask-display {
+  --char-width: 1.2ch;
+  --char-spacing: 0.15ch;
+  --slot-background: rgba(0, 0, 0, 0.05);
+  --slot-filled-background: transparent;
+  --division-line-color: var(--nf-text);
+}
+
+.nf-container[data-theme="dark"] .numflux-mask-display {
+  --slot-background: rgba(255, 255, 255, 0.05);
+}
+
+.numflux-mask-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--char-spacing);
+}
+
+/* Fraction Display */
+.numflux-mask-fraction {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.numflux-mask-fraction-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+}
+
+.numflux-mask-numerator,
+.numflux-mask-denominator {
+  display: flex;
+  justify-content: center;
+  min-width: fit-content;
+}
+
+.numflux-mask-division-line {
+  font-weight: 600;
+  padding: 0 2px;
+}
+
+/* Decimal Display */
+.numflux-mask-decimal {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.numflux-mask-separator {
+  font-weight: 600;
+  padding: 0 2px;
+}
+
+/* Simple Display */
+.numflux-mask-simple {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Prefix and Suffix */
+.numflux-mask-prefix,
+.numflux-mask-suffix {
+  color: var(--nf-muted);
+  font-weight: 500;
+}
+
+.numflux-mask-prefix {
+  margin-right: 4px;
+}
+
+.numflux-mask-suffix {
+  margin-left: 4px;
+}
+
+/* Character Slots */
+.numflux-mask-char-slot {
+  display: inline-block;
+  width: var(--char-width);
+  min-width: var(--char-width);
+  text-align: center;
+  background: var(--slot-background);
+  border-radius: 4px;
+  padding: 2px 0;
+  margin: 0 1px;
+  position: relative;
+  transition: background 150ms ease, transform 100ms ease;
+  min-height: 1.2em;
+}
+
+.numflux-mask-char-slot[data-filled="false"] {
+  opacity: 0.3;
+  color: var(--nf-muted);
+}
+
+.numflux-mask-char-slot[data-filled="true"] {
+  background: var(--slot-filled-background);
+  font-weight: 600;
+  opacity: 1;
+}
+
+/* Active Segment Highlight */
+[data-segment][data-active="true"] .numflux-mask-char-slot {
+  box-shadow: 0 0 0 1px var(--nf-accent);
+}
+
+[data-segment][data-active="true"] .numflux-mask-char-slot[data-filled="false"]:first-of-type {
+  animation: pulse-slot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-slot {
+  0%, 100% {
+    background: var(--slot-background);
+  }
+  50% {
+    background: rgba(15, 155, 209, 0.15);
+  }
+}
+
+.nf-container[data-theme="dark"] [data-segment][data-active="true"] .numflux-mask-char-slot[data-filled="false"]:first-of-type {
+  animation: pulse-slot-dark 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-slot-dark {
+  0%, 100% {
+    background: var(--slot-background);
+  }
+  50% {
+    background: rgba(77, 208, 225, 0.2);
+  }
+}
+
+/* Segment containers */
+.numflux-mask-integer,
+.numflux-mask-fractional {
+  display: inline-flex;
+  align-items: center;
 }

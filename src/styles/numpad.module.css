@@ -28,3 +28,7 @@
 .announcer {
   composes: nf-announcer from "./numpad.global.css";
 }
+
+.displayError {
+  composes: nf-display from "./numpad.global.css";
+}

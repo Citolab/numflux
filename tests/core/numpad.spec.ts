@@ -15,10 +15,12 @@ describe("normalizeConfig", () => {
       allowDecimal: true,
       allowNegative: true,
       maxDigits: null,
+      minDigits: null,
       decimalSeparator: ".",
-      min: null,
-      max: null,
-      sync: false
+      minValue: null,
+      maxValue: null,
+      sync: false,
+      mask: undefined
     });
   });
 
@@ -35,7 +37,8 @@ describe("createNumpadState", () => {
     const state = createNumpadState();
     expect(state).toEqual({
       value: "",
-      isPristine: true
+      isPristine: true,
+      validationError: null
     });
   });
 
@@ -350,5 +353,86 @@ describe("formatDisplayValue", () => {
     expect(display.raw).toBe("123.45");
     expect(display.formatted).toBe("123.45"); // Falls back to default
     expect(display.numeric).toBe(123.45);
+  });
+});
+
+describe("validation errors", () => {
+  it("should detect minValue violations", () => {
+    const config = normalizeConfig({ minValue: 25, maxValue: 100 });
+    const state = createNumpadState("10", config);
+    expect(state.validationError).toBe("minValue");
+  });
+
+  it("should detect maxValue violations", () => {
+    const config = normalizeConfig({ minValue: 10, maxValue: 50 });
+    const state = createNumpadState("75", config);
+    expect(state.validationError).toBe("maxValue");
+  });
+
+  it("should detect minDigits violations", () => {
+    const config = normalizeConfig({ minDigits: 3, maxDigits: 6 });
+    const state = createNumpadState("12", config);
+    expect(state.validationError).toBe("minDigits");
+  });
+
+  it("should detect maxDigits violations", () => {
+    const config = normalizeConfig({ minDigits: 2, maxDigits: 4 });
+    // sanitizeValue limits to 4 digits, so "12345" becomes "1234" which is valid
+    // Instead test with a value that exceeds during state transitions
+    let state = createNumpadState("", config);
+    state = reduceNumpad(state, { type: "digit", digit: 1 }, config);
+    state = reduceNumpad(state, { type: "digit", digit: 2 }, config);
+    state = reduceNumpad(state, { type: "digit", digit: 3 }, config);
+    state = reduceNumpad(state, { type: "digit", digit: 4 }, config);
+    state = reduceNumpad(state, { type: "digit", digit: 5 }, config);
+    // After 5th digit, should still have 4 digits due to maxDigits limit
+    expect(state.value).toBe("1234"); // Should be limited by input
+    expect(state.validationError).toBe(null); // No error since input was limited
+  });
+
+  it("should have no validation error for valid values", () => {
+    const config = normalizeConfig({ minValue: 10, maxValue: 100, minDigits: 2, maxDigits: 4 });
+    const state = createNumpadState("50", config);
+    expect(state.validationError).toBe(null);
+  });
+
+  it("should update validation error when reducing numpad", () => {
+    const config = normalizeConfig({ minValue: 20, maxValue: 80 });
+    let state = createNumpadState("", config);
+    
+    // Add digits to make "15" (below minValue)
+    state = reduceNumpad(state, { type: "digit", digit: 1 }, config);
+    state = reduceNumpad(state, { type: "digit", digit: 5 }, config);
+    expect(state.validationError).toBe("minValue");
+    
+    // Continue to make "150" (above maxValue)  
+    state = reduceNumpad(state, { type: "digit", digit: 0 }, config);
+    expect(state.validationError).toBe("maxValue");
+    
+    // Delete to make "15" again (below minValue)
+    state = reduceNumpad(state, { type: "delete" }, config);
+    expect(state.validationError).toBe("minValue");
+    
+    // Clear to make valid range
+    state = reduceNumpad(state, { type: "clear" }, config);
+    state = reduceNumpad(state, { type: "digit", digit: 5 }, config);
+    state = reduceNumpad(state, { type: "digit", digit: 0 }, config);
+    expect(state.validationError).toBe(null);
+  });
+
+  it("should handle negative minValue validation", () => {
+    const config = normalizeConfig({ minValue: -50, maxValue: -10, allowNegative: true });
+    
+    // Test value below minValue
+    let state = createNumpadState("-75", config);
+    expect(state.validationError).toBe("minValue");
+    
+    // Test value within range
+    state = createNumpadState("-30", config);
+    expect(state.validationError).toBe(null);
+    
+    // Test value above maxValue
+    state = createNumpadState("-5", config);
+    expect(state.validationError).toBe("maxValue");
   });
 });

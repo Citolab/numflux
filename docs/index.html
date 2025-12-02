@@ -133,11 +133,11 @@
         <div class="demo-grid">
             <div class="demo-card">
                 <h2>💰 Currency Input (Light)</h2>
-                <p>Perfect for financial applications with 2 decimal places</p>
+                <p>Mask-based input with € prefix and character slots</p>
                 <div class="numpad-container" id="currency-demo"></div>
                 <div class="output">
                     <div class="output-label">Value:</div>
-                    <div id="currency-output">0.00</div>
+                    <div id="currency-output">€ 0,00</div>
                 </div>
             </div>
 
@@ -175,12 +175,12 @@
         // Use the local built version from dist folder
         import { createNumpad } from './dist/index.js';
 
-        // Currency demo (light theme, 2 decimals)
+        // Currency demo with mask (light theme, shows € prefix)
         createNumpad(document.getElementById('currency-demo'), {
-            allowDecimal: 2,
+            mask: '€ ____,__',
             theme: 'light',
             onChange: (state, display) => {
-                document.getElementById('currency-output').textContent = display.formatted || '0.00';
+                document.getElementById('currency-output').textContent = display.formatted || '€ 0,00';
             }
         });
 

@@ -9,25 +9,23 @@ import rawStyles from "@/styles/numpad.module.css";
 const styles = rawStyles as Record<string, string>;
 type StyleKey = keyof typeof styles;
 
-export interface VanillaNumpadOptions extends Omit<
+export interface CssModulesNumpadOptions extends Omit<
   NumpadDomOptions,
   "className" | "styles" | "theme"
 > {
-  /** Theme name - controls CSS custom properties via data attribute */
   theme?: "dark" | "light";
-  /** Additional CSS classes to apply to container */
   className?: string;
 }
 
-export interface VanillaNumpadInstance extends NumpadDomInstance {}
+export interface CssModulesNumpadInstance extends NumpadDomInstance {}
 
 /**
- * Vanilla integration layer that adds CSS Modules styling to the core DOM implementation
+ * Integration layer that adds CSS Modules styling to the core DOM implementation
  */
 export function mountNumpad(
   target: HTMLElement,
-  options: VanillaNumpadOptions = {}
-): VanillaNumpadInstance {
+  options: CssModulesNumpadOptions = {}
+): CssModulesNumpadInstance {
   const { theme, className, ...domOptions } = options;
 
   // Create the core DOM instance with theme support
@@ -51,7 +49,7 @@ export function mountNumpad(
     buttons.forEach((button: HTMLButtonElement) => {
       const isDisabled = button.disabled;
       const variant = getButtonVariant(button);
-      
+
       // Remove all existing classes and reapply with current disabled state
       button.className = "";
       applyModuleClasses(button, styles, ...buildButtonClassNames(variant, isDisabled));
@@ -79,7 +77,10 @@ export function mountNumpad(
   return instance;
 }
 
-function buildButtonClassNames(variant: "accent" | "ghost" | "default" = "default", disabled = false): StyleKey[] {
+function buildButtonClassNames(
+  variant: "accent" | "ghost" | "default" = "default",
+  disabled = false
+): StyleKey[] {
   const classes: StyleKey[] = ["button"];
   if (variant === "accent") classes.push("buttonAccent");
   if (variant === "ghost") classes.push("buttonGhost");

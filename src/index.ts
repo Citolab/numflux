@@ -21,7 +21,8 @@ export {
   isValidValue,
   isWithinDecimalLimit,
   sanitizeValue,
-  normalizeLeadingZeros
+  normalizeLeadingZeros,
+  canAddDigit
 } from "@/utils/validation.utils";
 
 // Main numpad integration (requires CSS import)
@@ -29,7 +30,7 @@ export {
   createNumpad,
   type CreateNumpadOptions,
   type CreateNumpadInstance
-} from "@/integrations/styled";
+} from "@/integrations/global-styles";
 
 // Icon integration helpers
 export {
@@ -38,7 +39,7 @@ export {
   createCustomIconTheme,
   createImageIconTheme,
   extractSvgString
-} from "@/integrations/icons";
+} from "@/utils/icon.utils";
 
 // Integration utilities for building custom integrations
 export {
@@ -50,7 +51,6 @@ export {
   compose
 } from "@/integrations/utils";
 export { BUTTON_VARIANTS, LABEL_KEYS } from "@/constants/constants";
-export type { LabelKey } from "@/types/numpad";
 
 // Core types
 export type {
@@ -61,7 +61,8 @@ export type {
   DisplayValue,
   DisplayRuleFunction,
   KeyValidatorFunction,
-  NumpadOptions
+  NumpadOptions,
+  LabelKey
 } from "@/types/numpad";
 
 // Utility functions
@@ -69,3 +70,19 @@ export { applyModuleClasses } from "@/utils/class.utils";
 
 // Label utilities and themes
 export { getDefaultLabel, DEFAULT_LABELS, LABEL_THEMES } from "@/utils/label.utils";
+
+// Mask utilities and display
+export {
+  parseMask,
+  createMaskState,
+  formatMaskValue,
+  getMaskRawValue,
+  appendDigitToMask,
+  deleteCharFromMask,
+  clearMask,
+  getLocalizedDecimalSeparator,
+  localizeDecimalSeparator,
+  isMaskComplete,
+  getMaskFilledLength
+} from "@/utils/mask.utils";
+export { createMaskDisplay, getMaskDisplayString } from "@/core/numpad-mask";

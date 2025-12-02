@@ -5,7 +5,7 @@ import {
   createImageIconTheme,
   createSvgIconTheme,
   extractSvgString
-} from "@/integrations/icons";
+} from "@/utils/icon.utils";
 
 describe("createSvgIconTheme", () => {
   it("normalizes string and object icon inputs with alt fallbacks", () => {
