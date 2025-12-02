@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/Citolab/numflux/compare/v1.4.0...v1.4.1) (2025-12-02)
+
+
+### Miscellaneous Chores
+
+* release 1.4.1 ([b79e3fc](https://github.com/Citolab/numflux/commit/b79e3fcbf38033c6eaec4d571a916aa2ebadfc03))
+
 ## [1.4.0](https://github.com/Citolab/numflux/compare/v1.3.0...v1.4.0) (2025-12-02)
 
 
