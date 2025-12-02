@@ -18,13 +18,7 @@ export function createMaskDisplay(
   format: MaskFormat,
   options: MaskDisplayOptions = {}
 ): MaskDisplayElement {
-  console.log('[MASK DISPLAY] Creating mask display', { format, options });
-
-  const {
-    showCharacterSlots = true,
-    charWidth = "1.2ch",
-    locale
-  } = options;
+  const { showCharacterSlots = true, charWidth = "1.2ch", locale } = options;
 
   const container = document.createElement("div");
   container.className = "numflux-mask-display";
@@ -33,8 +27,6 @@ export function createMaskDisplay(
   // Apply CSS variables
   container.style.setProperty("--char-width", charWidth);
 
-  console.log('[MASK DISPLAY] Format type:', format.type);
-
   if (format.type === "fraction") {
     createFractionDisplay(container, format, showCharacterSlots);
   } else if (format.type === "decimal") {
@@ -42,9 +34,6 @@ export function createMaskDisplay(
   } else {
     createSimpleDisplay(container, format, showCharacterSlots);
   }
-
-  console.log('[MASK DISPLAY] Container created, children:', container.children.length);
-  console.log('[MASK DISPLAY] Container HTML:', container.innerHTML);
 
   const update = (state: MaskState) => {
     updateMaskDisplay(container, state, format);
@@ -81,7 +70,7 @@ function createFractionDisplay(
   fractionContainer.className = "numflux-mask-fraction-container";
 
   // Numerator
-  const numeratorSeg = format.segments.find(s => s.type === "numerator");
+  const numeratorSeg = format.segments.find((s) => s.type === "numerator");
   if (numeratorSeg) {
     const numerator = document.createElement("span");
     numerator.className = "numflux-mask-numerator";
@@ -97,7 +86,7 @@ function createFractionDisplay(
   fractionContainer.appendChild(divisionLine);
 
   // Denominator
-  const denominatorSeg = format.segments.find(s => s.type === "denominator");
+  const denominatorSeg = format.segments.find((s) => s.type === "denominator");
   if (denominatorSeg) {
     const denominator = document.createElement("span");
     denominator.className = "numflux-mask-denominator";
@@ -140,7 +129,7 @@ function createDecimalDisplay(
   }
 
   // Integer part
-  const integerSeg = format.segments.find(s => s.type === "integer");
+  const integerSeg = format.segments.find((s) => s.type === "integer");
   if (integerSeg) {
     const integer = document.createElement("span");
     integer.className = "numflux-mask-integer";
@@ -156,7 +145,7 @@ function createDecimalDisplay(
   wrapper.appendChild(separator);
 
   // Fractional part
-  const fractionalSeg = format.segments.find(s => s.type === "fractional");
+  const fractionalSeg = format.segments.find((s) => s.type === "fractional");
   if (fractionalSeg) {
     const fractional = document.createElement("span");
     fractional.className = "numflux-mask-fractional";
@@ -196,7 +185,7 @@ function createSimpleDisplay(
   }
 
   // Integer part
-  const integerSeg = format.segments.find(s => s.type === "integer");
+  const integerSeg = format.segments.find((s) => s.type === "integer");
   if (integerSeg) {
     const integer = document.createElement("span");
     integer.className = "numflux-mask-integer";
@@ -242,12 +231,8 @@ function createSegmentSlots(
 /**
  * Update mask display with current state
  */
-function updateMaskDisplay(
-  container: HTMLElement,
-  state: MaskState,
-  format: MaskFormat
-): void {
-  format.segments.forEach(segmentInfo => {
+function updateMaskDisplay(container: HTMLElement, state: MaskState, format: MaskFormat): void {
+  format.segments.forEach((segmentInfo) => {
     const segmentValue = state.segments[segmentInfo.type] || "";
     const segmentElement = container.querySelector(
       `[data-segment="${segmentInfo.type}"]`
@@ -266,8 +251,7 @@ function updateMaskDisplay(
       });
 
       // Mark active segment
-      segmentElement.dataset.active =
-        state.activeSegment === segmentInfo.type ? "true" : "false";
+      segmentElement.dataset.active = state.activeSegment === segmentInfo.type ? "true" : "false";
     } else {
       // Simple text display without slots
       segmentElement.textContent = segmentValue || "";
