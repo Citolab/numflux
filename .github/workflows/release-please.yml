@@ -34,13 +34,17 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
         run: npm ci
 
+      # Run tests before building/publishing
+      - name: Test
+        if: ${{ steps.release.outputs.release_created }}
+        run: npm test
+
       # Build the package if a release was created
       - name: Build
         if: ${{ steps.release.outputs.release_created }}
         run: npm run build
 
-      # Publish to npm (commented out until you're ready)
-      # Uncomment when ready to publish to npm and add NPM_TOKEN secret
+      # Publish to npm
       - name: Publish to npm
         if: ${{ steps.release.outputs.release_created }}
         run: npm publish
