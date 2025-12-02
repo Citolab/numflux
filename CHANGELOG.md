@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/Citolab/numflux/compare/v1.3.0...v1.4.0) (2025-12-02)
+
+
+### Features
+
+* add mask functionality to enhance input restrictions and display ([1759970](https://github.com/Citolab/numflux/commit/175997058a0e5bb0fb1d3469b4253b3a6ca0be88))
+
+
+### Bug Fixes
+
+* linting errors ([6581c3c](https://github.com/Citolab/numflux/commit/6581c3c29f3bba601eacc7434ef87ff651e35832))
+
 ## [1.3.0](https://github.com/Citolab/numflux/compare/v1.2.0...v1.3.0) (2025-12-01)
 
 
