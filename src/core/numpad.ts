@@ -125,7 +125,7 @@ type StandardActionHandler = (
 const maskActionHandlers: Record<string, MaskActionHandler> = {
   digit: (state, action, maskFormat) => {
     // maskState must exist when these handlers are called
-    const maskState = (state.maskState ?? createMaskState(maskFormat, state.value)) as MaskState;
+    const maskState = state.maskState ?? createMaskState(maskFormat, state.value);
 
     if (action.type !== "digit") {
       return { value: state.value, maskState };
@@ -138,7 +138,7 @@ const maskActionHandlers: Record<string, MaskActionHandler> = {
   },
   delete: (state, _action, maskFormat) => {
     // maskState must exist when these handlers are called
-    const maskState = (state.maskState ?? createMaskState(maskFormat, state.value)) as MaskState;
+    const maskState = state.maskState ?? createMaskState(maskFormat, state.value);
 
     const newMaskState = deleteCharFromMask(maskState, maskFormat);
     return {
@@ -289,7 +289,7 @@ export function formatDisplayValue(
   if (typeof normalizedConfig.mask === "string" && state.maskState) {
     try {
       const maskFormat = parseMask(normalizedConfig.mask);
-      const formatted = formatMaskValue(state.maskState as MaskState, maskFormat);
+      const formatted = formatMaskValue(state.maskState, maskFormat);
 
       // For mask mode, numeric conversion depends on type
       let numeric: number | null = null;

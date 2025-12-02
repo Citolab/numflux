@@ -61,8 +61,8 @@ const meta: Meta<StoryArgs> = {
 
     mountNumpad(target, {
       ...args,
-      onChange: (state: any, display: any) => logChange({ state, display }),
-      onSubmit: (state: any, display: any) => logSubmit({ state, display })
+      onChange: (state: NumpadState, display: DisplayValue) => logChange({ state, display }),
+      onSubmit: (state: NumpadState, display: DisplayValue) => logSubmit({ state, display })
     });
 
     return container;
