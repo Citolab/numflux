@@ -1,4 +1,4 @@
-# 🔢 Numflux
+# Numflux
 
 **Framework-agnostic numpad component**
 
@@ -6,17 +6,28 @@ A TypeScript library that provides a clean, extensible numpad implementation. Bu
 
 **[📺 View Live Demo](https://citolab.github.io/numflux/)**
 
-## ✨ Features
+## Table of Contents
+
+- [✨ Features](#features)
+- [🚀 Quick Start](#quick-start)
+- [📖 Basic Usage](#basic-usage)
+- [🎨 Styling Options](#styling-options)
+- [🎭 Mask Syntax](#mask-syntax)
+- [♿ Accessibility Options](#accessibility-options)
+- [🔌 Framework Integration](#framework-integration)
+- [👨‍🍳 Cookbook](#cookbook)
+- [🛠️ Advanced Usage](#advanced-usage)
+
+## Features
 
 - 🧮 **Pure Logic Core** - Side-effect-free reducer for numpad interactions
-- 🏗️ **Composable Architecture** - Independent layers that can be mixed and matched
 - ⚙️ **Highly Configurable** - Decimal places, validation, theming, custom separators, custom icon integration
 - 🌐 **Framework Agnostic** - Works with React, Vue, Angular, Svelte, vanilla JS, or any other framework
 - 📦 **Zero Dependencies** - Tiny bundle size, no runtime dependencies
 - ✨ **Flexible Styling** - Use default styles, CSS Modules, custom CSS, or whatever you like
 - ♿ **Accessible** - WCAG 2.1 AA compliant with screen reader support
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 npm install @citolab/numflux
@@ -35,7 +46,7 @@ const numpad = createNumpad(document.getElementById("numpad"), {
 });
 ```
 
-## 📖 Basic Usage
+## Basic Usage
 
 <details>
 <summary><strong>🎯 Pure State Logic (Framework-agnostic core)</strong></summary>
@@ -75,13 +86,14 @@ dispatch({ type: "digit", digit: 5 });
 **Configuration Options:**
 ```typescript
 const currencyConfig: NumpadConfig = {
-  allowDecimal: 2,        // Exactly 2 decimal places
-  allowNegative: false,   // No negative values
-  maxDigits: 8,          // Max 8 total digits
-  decimalSeparator: ".",  // Decimal separator
-  min: 0,                // Minimum value
-  max: 99999.99,         // Maximum value
-  sync: true             // Real-time onChange callbacks
+  allowDecimal: 2,         // Exactly 2 decimal places
+  allowNegative: false,    // No negative values
+  minDigits: 1,            // Minimum digits required
+  maxDigits: 8,            // Maximum total digits
+  minValue: 0,             // Minimum numeric value
+  maxValue: 99999.99,      // Maximum numeric value
+  decimalSeparator: ".",   // Decimal separator
+  sync: true               // Real-time onChange callbacks
 };
 ```
 
@@ -98,11 +110,9 @@ const isValid = isValidValue("150", { max: 100 }); // -> false
 // Clean user input
 const clean = sanitizeValue("00042.500", { allowDecimal: 2 }); // -> "42.50"
 ```
-
 </details>
 
-<details>
-<summary><strong>🎨 Styled Numpad</strong></summary>
+### Styled Numpad
 
 ```typescript
 import { createNumpad } from "@citolab/numflux";
@@ -125,8 +135,7 @@ console.log("Current:", numpad.getState().value);
 numpad.destroy();
 ```
 
-<details>
-<summary><strong>⚡ Framework-agnostic DOM (No styling)</strong></summary>
+### Framework-agnostic DOM (No styling)
 
 ```typescript
 import { createNumpadDom } from "@citolab/numflux";
@@ -151,51 +160,13 @@ numpad.root;    // Main container
 numpad.display; // Display element
 numpad.keypad;  // Keypad container
 ```
-
-Perfect for custom styling or framework integration.
-
 </details>
 
-## 🏗️ Architecture
-
-Numflux uses a **layered architecture** where each layer is completely independent:
-
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Framework     │    │    Styling       │    │   Custom        │
-│  Integrations   │    │  Integrations    │    │ Integrations    │
-│ (React, Vue...) │    │ (CSS, Tailwind)  │    │ (Your choice)   │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-         │                       │                       │
-         └───────────────────────┼───────────────────────┘
-                                 │
-         ┌───────────────────────────────────────────────────────┐
-         │              🧰 Composable Utilities                  │
-         │     (withTheme, withClassNames, withEvents...)        │
-         └───────────────────────────────────────────────────────┘
-                                 │
-         ┌───────────────────────────────────────────────────────┐
-         │              ⚡ Core DOM Implementation               │
-         │         (Framework-agnostic DOM + Events)            │
-         └───────────────────────────────────────────────────────┘
-                                 │
-         ┌───────────────────────────────────────────────────────┐
-         │              🧮 Pure State Logic                      │
-         │            (Reducers, Validation, Utils)             │
-         └───────────────────────────────────────────────────────┘
-```
-
-**Benefits:**
-- 🔄 **True Composability** - Mix and match any layers
-- 🚫 **Zero Coupling** - Remove any integration without affecting others
-- 📦 **Tree Shaking** - Import only what you need
-- 🛠️ **Extensible** - Easy to add new integrations
-
-## 🎨 Styling Options
+## Styling Options
 
 Numflux offers two styling approaches:
 
-### 1. 🚀 **Styled Numpad** (Recommended)
+### 1. Styled Numpad (Recommended)
 Pre-built styles with themes, minimal setup required.
 
 ```typescript
@@ -213,7 +184,7 @@ const numpad = createNumpad(container, {
 
 ---
 
-### 2. 🛠️ **Custom Styling** (Full Control)
+### 2. Custom Styling (Full Control)
 Unstyled core, build your own design with utilities.
 
 ```typescript
@@ -233,7 +204,7 @@ numpad = withClassNames(numpad, {
 
 ---
 
-## 🎭 Mask Syntax
+## Mask Syntax
 
 Numflux supports masked input formats for structured values (decimals, fractions, prefixed/suffixed numbers).
 
@@ -269,22 +240,22 @@ const numpad = createNumpad(container, {
 - `formatMaskValue(maskState, maskFormat)` — formatted display string
 - `getMaskRawValue(maskState, maskFormat)` — numeric string without prefix/suffix
 
-### 🎨 **Custom CSS Variables**
+### Custom CSS Variables
 All approaches support CSS variable customization:
 
 ```css
 .my-numpad {
-  --nf-surface: #1a1a2e;      /* Background */
-  --nf-text: #ffffff;         /* Text color */
-  --nf-accent: #64ffda;       /* Accent color */
-  --nf-button-radius: 12px;   /* Button corners */
-  --nf-font-family: "Inter";  /* Typography */
+  --nf-surface: #1a1a2e;
+  --nf-text: #ffffff;
+  --nf-accent: #64ffda;
+  --nf-button-radius: 12px;
+  --nf-font-family: "Inter";
 }
 ```
 
 ---
 
-### ♿ **Accessibility Options**
+### Accessibility Options
 Numflux is WCAG 2.1 AA compliant with comprehensive accessibility features:
 
 ```typescript
@@ -305,7 +276,7 @@ const numpad = createNumpad(container, {
 - 🎨 **Focus Indicators** - High-contrast focus outlines
 - 🏗️ **Semantic HTML** - Proper roles and ARIA attributes
 
-## 🔌 Framework Integration
+## Framework Integration
 
 <details>
 <summary><strong>⚛️ React</strong></summary>
@@ -546,11 +517,11 @@ function createCustomNumpad(container, theme, options) {
 ```
 </details>
 
-## 👨‍🍳 Cookbook
+## Cookbook
 
 > **📚 [View Full Cookbook](./COOKBOOK.md)**
 
-## 🛠️ Advanced Usage
+## Advanced Usage
 
 <details>
 <summary><strong>🧩 Composable Utilities</strong></summary>
@@ -652,7 +623,7 @@ const numpad = createNumpad(container, {
 
 </details>
 
-## 📚 API Reference
+## API Reference
 
 <details>
 <summary><strong>📦 Core Exports</strong></summary>
@@ -765,7 +736,7 @@ interface DisplayValue {
 
 </details>
 
-## 🤝 Contributing
+## Contributing
 
 <details>
 <summary><strong>🚀 Development Setup</strong></summary>
@@ -828,7 +799,7 @@ src/
 
 ---
 
-## 🎯 Which Integration Should I Use?
+## Which Integration Should I Use?
 
 | Integration | Best For | Bundle Size | CSS Import Required |
 |-------------|----------|-------------|-------------------|
