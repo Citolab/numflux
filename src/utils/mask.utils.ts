@@ -5,28 +5,64 @@
 import type { MaskFormat, MaskSegment, MaskSegmentType, MaskState } from "@/types/mask";
 
 /**
+ * Extract prefix, digit pattern, and suffix from a string that may contain
+ * embedded thousands separators (dots)
+ */
+function extractPattern(str: string): {
+  prefix: string;
+  digitLength: number;
+  suffix: string;
+  thousandsSeparators: number[];
+} | null {
+  // Match: prefix, then underscores with optional dots, then suffix
+  // Pattern: (prefix)(___.___ or ___)(suffix)
+  const match = str.match(/^(.*?)((?:_+\.)*_+)(.*)$/);
+  if (!match) return null;
+
+  const prefix = match[1];
+  const digitPattern = match[2];
+  const suffix = match[3];
+
+  // Track positions of thousands separators
+  const thousandsSeparators: number[] = [];
+  let digitCount = 0;
+
+  for (let i = 0; i < digitPattern.length; i++) {
+    if (digitPattern[i] === '_') {
+      digitCount++;
+    } else if (digitPattern[i] === '.') {
+      // Record that a separator appears after this many digits
+      thousandsSeparators.push(digitCount);
+    }
+  }
+
+  const digitLength = digitCount;
+
+  return { prefix, digitLength, suffix, thousandsSeparators };
+}
+
+/**
  * Parse a mask string into a structured format
  *
  * Mask syntax:
  * _ = placeholder for a single digit
+ * . = thousands separator (when embedded in underscores)
  * / = division symbol for fractions
  * , = decimal separator
  * Any other characters = prefix/suffix literals
  *
  * @example
  * parseMask("___") → simple 3-digit number
+ * parseMask("__.___ ") → 5-digit number with thousands separator
  * parseMask("__/_____") → fraction (2 digits / 5 digits)
  * parseMask("€ ____/__") → money with prefix (€ 4 digits / 2 digits)
  * parseMask("__,__") → decimal number (2 digits , 2 digits)
+ * parseMask("€ __.___,__") → currency with thousands separator and decimals
  * parseMask("________ cm") → number with suffix
  */
 export function parseMask(mask: string): MaskFormat {
   const hasFraction = mask.includes("/");
   const hasDecimal = mask.includes(",");
-
-  if (hasFraction && hasDecimal) {
-    throw new Error("Mask cannot contain both fraction (/) and decimal (,) separators");
-  }
 
   let type: MaskFormat["type"] = "simple";
   const segments: MaskSegment[] = [];
@@ -34,39 +70,104 @@ export function parseMask(mask: string): MaskFormat {
   let suffix = "";
   let totalSlots = 0;
 
-  if (hasFraction) {
+  // Complex case: both decimal and fraction (e.g., "€ __.___,__/__")
+  // This represents dividing a decimal number (like currency) by a whole number
+  if (hasFraction && hasDecimal) {
     type = "fraction";
     const parts = mask.split("/");
     if (parts.length !== 2) {
       throw new Error("Fraction mask must have exactly one / separator");
     }
 
-    // Extract prefix from numerator part
-    const numeratorMatch = parts[0].match(/^(.*?)(_+)$/);
-    if (!numeratorMatch) {
-      throw new Error("Invalid fraction mask: numerator must contain underscores");
+    // The numerator is a decimal number (e.g., "€ __.___,__")
+    const numeratorPart = parts[0];
+    const decimalParts = numeratorPart.split(",");
+    if (decimalParts.length !== 2) {
+      throw new Error("Complex mask: numerator must be a valid decimal format");
     }
-    prefix = numeratorMatch[1];
-    const numeratorLength = numeratorMatch[2].length;
 
-    // Extract suffix from denominator part
-    const denominatorMatch = parts[1].match(/^(_+)(.*)$/);
-    if (!denominatorMatch) {
-      throw new Error("Invalid fraction mask: denominator must contain underscores");
+    // Extract prefix and integer part of numerator
+    const integerPattern = extractPattern(decimalParts[0]);
+    if (!integerPattern) {
+      throw new Error("Complex mask: numerator integer part must contain underscores");
     }
-    const denominatorLength = denominatorMatch[1].length;
-    suffix = denominatorMatch[2];
+    prefix = integerPattern.prefix;
+    const integerLength = integerPattern.digitLength;
+    const integerThousandsSeps = integerPattern.thousandsSeparators;
+
+    // Extract fractional part of numerator
+    const fractionalPattern = extractPattern(decimalParts[1]);
+    if (!fractionalPattern) {
+      throw new Error("Complex mask: numerator fractional part must contain underscores");
+    }
+    const fractionalLength = fractionalPattern.digitLength;
+
+    // The numerator is treated as a single segment with total length
+    // The decimal separator appears after the integer part
+    const numeratorLength = integerLength + fractionalLength;
+
+    // Extract denominator
+    const denominatorPattern = extractPattern(parts[1]);
+    if (!denominatorPattern) {
+      throw new Error("Complex mask: denominator must contain underscores");
+    }
+    const denominatorLength = denominatorPattern.digitLength;
+    const denominatorThousandsSeps = denominatorPattern.thousandsSeparators;
+    suffix = denominatorPattern.suffix;
 
     segments.push({
       type: "numerator",
       length: numeratorLength,
-      startIndex: prefix.length
+      startIndex: prefix.length,
+      thousandsSeparators: integerThousandsSeps,
+      decimalSeparator: integerLength // Decimal separator after integer digits
     });
 
     segments.push({
       type: "denominator",
       length: denominatorLength,
-      startIndex: prefix.length + numeratorLength + 1 // +1 for '/'
+      startIndex: prefix.length + numeratorLength + 1, // +1 for '/'
+      thousandsSeparators: denominatorThousandsSeps
+    });
+
+    totalSlots = numeratorLength + denominatorLength;
+  } else if (hasFraction) {
+    type = "fraction";
+    const parts = mask.split("/");
+    if (parts.length !== 2) {
+      throw new Error("Fraction mask must have exactly one / separator");
+    }
+
+    // Extract numerator with support for thousands separators
+    const numeratorPattern = extractPattern(parts[0]);
+    if (!numeratorPattern) {
+      throw new Error("Invalid fraction mask: numerator must contain underscores");
+    }
+    prefix = numeratorPattern.prefix;
+    const numeratorLength = numeratorPattern.digitLength;
+    const numeratorThousandsSeps = numeratorPattern.thousandsSeparators;
+
+    // Extract denominator with support for thousands separators
+    const denominatorPattern = extractPattern(parts[1]);
+    if (!denominatorPattern) {
+      throw new Error("Invalid fraction mask: denominator must contain underscores");
+    }
+    const denominatorLength = denominatorPattern.digitLength;
+    const denominatorThousandsSeps = denominatorPattern.thousandsSeparators;
+    suffix = denominatorPattern.suffix;
+
+    segments.push({
+      type: "numerator",
+      length: numeratorLength,
+      startIndex: prefix.length,
+      thousandsSeparators: numeratorThousandsSeps.length > 0 ? numeratorThousandsSeps : undefined
+    });
+
+    segments.push({
+      type: "denominator",
+      length: denominatorLength,
+      startIndex: prefix.length + numeratorLength + 1, // +1 for '/'
+      thousandsSeparators: denominatorThousandsSeps.length > 0 ? denominatorThousandsSeps : undefined
     });
 
     totalSlots = numeratorLength + denominatorLength;
@@ -77,26 +178,28 @@ export function parseMask(mask: string): MaskFormat {
       throw new Error("Decimal mask must have exactly one , separator");
     }
 
-    // Extract prefix from integer part
-    const integerMatch = parts[0].match(/^(.*?)(_+)$/);
-    if (!integerMatch) {
+    // Extract integer part with support for thousands separators
+    const integerPattern = extractPattern(parts[0]);
+    if (!integerPattern) {
       throw new Error("Invalid decimal mask: integer part must contain underscores");
     }
-    prefix = integerMatch[1];
-    const integerLength = integerMatch[2].length;
+    prefix = integerPattern.prefix;
+    const integerLength = integerPattern.digitLength;
+    const integerThousandsSeps = integerPattern.thousandsSeparators;
 
-    // Extract suffix from fractional part
-    const fractionalMatch = parts[1].match(/^(_+)(.*)$/);
-    if (!fractionalMatch) {
+    // Extract fractional part
+    const fractionalPattern = extractPattern(parts[1]);
+    if (!fractionalPattern) {
       throw new Error("Invalid decimal mask: fractional part must contain underscores");
     }
-    const fractionalLength = fractionalMatch[1].length;
-    suffix = fractionalMatch[2];
+    const fractionalLength = fractionalPattern.digitLength;
+    suffix = fractionalPattern.suffix;
 
     segments.push({
       type: "integer",
       length: integerLength,
-      startIndex: prefix.length
+      startIndex: prefix.length,
+      thousandsSeparators: integerThousandsSeps.length > 0 ? integerThousandsSeps : undefined
     });
 
     segments.push({
@@ -108,19 +211,21 @@ export function parseMask(mask: string): MaskFormat {
     totalSlots = integerLength + fractionalLength;
   } else {
     type = "simple";
-    // Extract prefix and suffix
-    const match = mask.match(/^(.*?)(_+)(.*)$/);
-    if (!match) {
+    // Extract prefix and suffix with support for thousands separators
+    const pattern = extractPattern(mask);
+    if (!pattern) {
       throw new Error("Invalid mask: must contain at least one underscore");
     }
-    prefix = match[1];
-    const digitLength = match[2].length;
-    suffix = match[3];
+    prefix = pattern.prefix;
+    const digitLength = pattern.digitLength;
+    const thousandsSeps = pattern.thousandsSeparators;
+    suffix = pattern.suffix;
 
     segments.push({
       type: "integer",
       length: digitLength,
-      startIndex: prefix.length
+      startIndex: prefix.length,
+      thousandsSeparators: thousandsSeps.length > 0 ? thousandsSeps : undefined
     });
 
     totalSlots = digitLength;

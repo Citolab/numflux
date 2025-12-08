@@ -84,6 +84,12 @@ export const SimpleWithSuffix: Story = {
   }
 };
 
+export const LongSuffix: Story = {
+  args: {
+    mask: "___ stukken taart"
+  }
+};
+
 // ============================================================================
 // Fraction Masks
 // ============================================================================
@@ -163,7 +169,7 @@ export const HeightInCm: Story = {
 
 export const TemperatureInC: Story = {
   args: {
-    mask: "__,__ °C"
+    mask: "__ °C"
   }
 };
 
@@ -203,10 +209,15 @@ export const TimeFormat: Story = {
 // Complex Examples
 // ============================================================================
 
-export const ComplexCurrency: Story = {
+export const CurrencyWithThousandsAndFraction: Story = {
   args: {
-    mask: "€ ______/__",
-    theme: "dark"
+    mask: "€ __.___,__/__"
+  }
+};
+
+export const ComplexCurrencyWithEightDigits: Story = {
+  args: {
+    mask: "€ __.___.___,__"
   }
 };
 

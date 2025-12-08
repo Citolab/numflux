@@ -11,6 +11,10 @@ export interface MaskSegment {
   length: number;
   /** Index in the mask string where this segment starts */
   startIndex: number;
+  /** Positions where thousands separators should appear (e.g., [2] means after 2nd digit) */
+  thousandsSeparators?: number[];
+  /** Position where decimal separator should appear (e.g., 5 means after 5th digit) */
+  decimalSeparator?: number;
 }
 
 export interface MaskFormat {

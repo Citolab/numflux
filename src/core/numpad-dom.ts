@@ -452,6 +452,7 @@ function getButtonAriaLabel(key: KeyDescriptor): string {
       return `${label}, submit value button`;
     case "toggle-sign":
       return `${label}, toggle positive negative button`;
+    /* istanbul ignore next -- fallback for unexpected action types */
     default:
       return `${label} button`;
   }

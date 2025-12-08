@@ -87,6 +87,19 @@ describe("parseMask", () => {
   it("should throw error for mask without underscores", () => {
     expect(() => parseMask("abc")).toThrow();
   });
+
+  it("should throw when complex decimal/fraction mask pieces are malformed", () => {
+    expect(() => parseMask("€ ,__/__")).toThrow(/numerator integer part/);
+    expect(() => parseMask("€ __.____/,")) // missing fractional underscores
+      .toThrow(/numerator must be a valid decimal format/);
+    expect(() => parseMask("€ __.___,__/")).toThrow(/denominator must contain underscores/);
+  });
+
+  it("should throw when simple fraction pieces are malformed", () => {
+    expect(() => parseMask("/__")).toThrow(/numerator must contain underscores/);
+    expect(() => parseMask("_/")).toThrow(/denominator must contain underscores/);
+    expect(() => parseMask("__/_/_")).toThrow(/exactly one/);
+  });
 });
 
 describe("createMaskState", () => {
@@ -239,6 +252,13 @@ describe("deleteCharFromMask", () => {
     expect(state.segments.numerator).toBe("1");
     expect(state.activeSegment).toBe("numerator");
   });
+
+  it("returns same state when nothing to delete at start", () => {
+    const format = parseMask("___");
+    const state = createMaskState(format);
+    const result = deleteCharFromMask(state, format);
+    expect(result).toEqual(state);
+  });
 });
 
 describe("clearMask", () => {
@@ -260,6 +280,11 @@ describe("getLocalizedDecimalSeparator", () => {
     expect(getLocalizedDecimalSeparator("de-DE")).toBe(",");
     expect(getLocalizedDecimalSeparator("fr-FR")).toBe(",");
   });
+
+  it("should fall back to navigator or default locale when none provided", () => {
+    const separator = getLocalizedDecimalSeparator();
+    expect(separator === "." || separator === ",").toBe(true);
+  });
 });
 
 describe("localizeDecimalSeparator", () => {
@@ -269,6 +294,10 @@ describe("localizeDecimalSeparator", () => {
 
   it("should keep period for en-US locale", () => {
     expect(localizeDecimalSeparator("12.34", "en-US")).toBe("12.34");
+  });
+
+  it("should leave value unchanged when separator is dot", () => {
+    expect(localizeDecimalSeparator("99.01", "en-US")).toBe("99.01");
   });
 });
 

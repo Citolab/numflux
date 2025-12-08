@@ -175,109 +175,134 @@
 }
 
 /* Mask styles */
-.numflux-mask-display {
+.nf-mask-display {
   --char-width: 1.2ch;
   --char-spacing: 0.15ch;
   --slot-background: rgba(0, 0, 0, 0.05);
   --slot-filled-background: transparent;
   --division-line-color: var(--nf-text);
+  --mask-font-size: 1em;
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  font-variant-numeric: tabular-nums;
+  font-size: var(--mask-font-size);
+  letter-spacing: var(--char-spacing);
+  overflow: hidden;
+  white-space: nowrap;
+  transform-origin: right center;
 }
 
-.nf-container[data-theme="dark"] .numflux-mask-display {
+.nf-container[data-theme="dark"] .nf-mask-display {
   --slot-background: rgba(255, 255, 255, 0.05);
 }
 
-.numflux-mask-display {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: var(--char-spacing);
-}
-
 /* Fraction Display */
-.numflux-mask-fraction {
+.nf-mask-fraction {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5em;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
-.numflux-mask-fraction-container {
+.nf-mask-fraction-container {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 4px;
+  gap: 0.25em;
 }
 
-.numflux-mask-numerator,
-.numflux-mask-denominator {
+.nf-mask-numerator,
+.nf-mask-denominator {
   display: flex;
   justify-content: center;
   min-width: fit-content;
 }
 
-.numflux-mask-division-line {
+.nf-mask-division-line {
   font-weight: 600;
-  padding: 0 2px;
+  padding: 0 0.125em;
 }
 
 /* Decimal Display */
-.numflux-mask-decimal {
+.nf-mask-decimal {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 0.125em;
 }
 
-.numflux-mask-separator {
+.nf-mask-separator {
   font-weight: 600;
-  padding: 0 2px;
+  padding: 0 0.125em;
+}
+
+.nf-mask-inline-separator {
+  display: inline-block;
+  min-width: 0.6em;
+  text-align: center;
+  font-weight: 600;
+  color: var(--nf-muted);
+  letter-spacing: 0;
+  padding: 0 0.05em;
+}
+
+.nf-mask-inline-separator--decimal {
+  color: var(--nf-text);
 }
 
 /* Simple Display */
-.numflux-mask-simple {
+.nf-mask-simple {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.25em;
 }
 
 /* Prefix and Suffix */
-.numflux-mask-prefix,
-.numflux-mask-suffix {
+.nf-mask-prefix,
+.nf-mask-suffix {
   color: var(--nf-muted);
   font-weight: 500;
+  white-space: nowrap;
 }
 
-.numflux-mask-prefix {
-  margin-right: 4px;
+.nf-mask-prefix {
+  margin-right: 0.25em;
 }
 
-.numflux-mask-suffix {
-  margin-left: 4px;
+.nf-mask-suffix {
+  margin-left: 0.25em;
 }
 
 /* Character Slots */
-.numflux-mask-char-slot {
+.nf-mask-char-slot {
   display: inline-block;
   width: var(--char-width);
   min-width: var(--char-width);
   text-align: center;
   background: var(--slot-background);
-  border-radius: 4px;
-  padding: 2px 0;
-  margin: 0 1px;
+  border-radius: 0.25em;
+  padding: 0.125em 0;
+  margin: 0 0.0625em;
   position: relative;
-  transition: background 150ms ease, transform 100ms ease;
+  transition: background 150ms ease, opacity 150ms ease;
   min-height: 1.2em;
-}
-
-.numflux-mask-char-slot[data-filled="false"] {
-  opacity: 0.3;
-  color: var(--nf-muted);
-}
-
-.numflux-mask-char-slot[data-filled="true"] {
-  background: var(--slot-filled-background);
   font-weight: 600;
+}
+
+.nf-mask-char-slot[data-filled="false"] {
+  opacity: 0.6;
+  color: var(--nf-muted);
+  background: var(--slot-background);
+}
+
+.nf-mask-char-slot[data-filled="true"] {
+  background: var(--slot-background);
+  color: var(--nf-text);
   opacity: 1;
 }
 
@@ -317,4 +342,5 @@
 .numflux-mask-fractional {
   display: inline-flex;
   align-items: center;
+  white-space: nowrap;
 }

@@ -32,3 +32,59 @@
 .displayError {
   composes: nf-display from "./numpad.global.css";
 }
+
+.maskDisplay {
+  composes: nf-mask-display from "./numpad.global.css";
+}
+
+.maskFraction {
+  composes: nf-mask-fraction from "./numpad.global.css";
+}
+
+.maskFractionContainer {
+  composes: nf-mask-fraction-container from "./numpad.global.css";
+}
+
+.maskNumerator {
+  composes: nf-mask-numerator from "./numpad.global.css";
+}
+
+.maskDenominator {
+  composes: nf-mask-denominator from "./numpad.global.css";
+}
+
+.maskDivisionLine {
+  composes: nf-mask-division-line from "./numpad.global.css";
+}
+
+.maskDecimal {
+  composes: nf-mask-decimal from "./numpad.global.css";
+}
+
+.maskSeparator {
+  composes: nf-mask-separator from "./numpad.global.css";
+}
+
+.maskSimple {
+  composes: nf-mask-simple from "./numpad.global.css";
+}
+
+.maskPrefix {
+  composes: nf-mask-prefix from "./numpad.global.css";
+}
+
+.maskSuffix {
+  composes: nf-mask-suffix from "./numpad.global.css";
+}
+
+.maskCharSlot {
+  composes: nf-mask-char-slot from "./numpad.global.css";
+}
+
+.maskInteger {
+  composes: nf-mask-integer from "./numpad.global.css";
+}
+
+.maskFractional {
+  composes: nf-mask-fractional from "./numpad.global.css";
+}

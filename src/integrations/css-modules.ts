@@ -20,6 +20,82 @@ export interface CssModulesNumpadOptions extends Omit<
 export interface CssModulesNumpadInstance extends NumpadDomInstance {}
 
 /**
+ * Apply CSS Modules classes to mask display elements
+ */
+function applyMaskClasses(displayElement: HTMLElement): void {
+  // Apply classes to mask display container
+  const maskDisplay = displayElement.querySelector(".nf-mask-display");
+  if (maskDisplay) {
+    applyModuleClasses(maskDisplay, styles, "maskDisplay");
+  }
+
+  // Apply classes to mask components
+  const maskFraction = displayElement.querySelector(".nf-mask-fraction");
+  if (maskFraction) {
+    applyModuleClasses(maskFraction, styles, "maskFraction");
+  }
+
+  const maskFractionContainer = displayElement.querySelector(".nf-mask-fraction-container");
+  if (maskFractionContainer) {
+    applyModuleClasses(maskFractionContainer, styles, "maskFractionContainer");
+  }
+
+  const maskNumerator = displayElement.querySelector(".nf-mask-numerator");
+  if (maskNumerator) {
+    applyModuleClasses(maskNumerator, styles, "maskNumerator");
+  }
+
+  const maskDenominator = displayElement.querySelector(".nf-mask-denominator");
+  if (maskDenominator) {
+    applyModuleClasses(maskDenominator, styles, "maskDenominator");
+  }
+
+  const maskDivisionLine = displayElement.querySelector(".nf-mask-division-line");
+  if (maskDivisionLine) {
+    applyModuleClasses(maskDivisionLine, styles, "maskDivisionLine");
+  }
+
+  const maskDecimal = displayElement.querySelector(".nf-mask-decimal");
+  if (maskDecimal) {
+    applyModuleClasses(maskDecimal, styles, "maskDecimal");
+  }
+
+  const maskSeparator = displayElement.querySelector(".nf-mask-separator");
+  if (maskSeparator) {
+    applyModuleClasses(maskSeparator, styles, "maskSeparator");
+  }
+
+  const maskSimple = displayElement.querySelector(".nf-mask-simple");
+  if (maskSimple) {
+    applyModuleClasses(maskSimple, styles, "maskSimple");
+  }
+
+  const maskPrefix = displayElement.querySelector(".nf-mask-prefix");
+  if (maskPrefix) {
+    applyModuleClasses(maskPrefix, styles, "maskPrefix");
+  }
+
+  const maskSuffix = displayElement.querySelector(".nf-mask-suffix");
+  if (maskSuffix) {
+    applyModuleClasses(maskSuffix, styles, "maskSuffix");
+  }
+
+  displayElement.querySelectorAll(".nf-mask-char-slot").forEach((slot) => {
+    applyModuleClasses(slot, styles, "maskCharSlot");
+  });
+
+  const maskInteger = displayElement.querySelector(".nf-mask-integer");
+  if (maskInteger) {
+    applyModuleClasses(maskInteger, styles, "maskInteger");
+  }
+
+  const maskFractional = displayElement.querySelector(".nf-mask-fractional");
+  if (maskFractional) {
+    applyModuleClasses(maskFractional, styles, "maskFractional");
+  }
+}
+
+/**
  * Integration layer that adds CSS Modules styling to the core DOM implementation
  */
 export function mountNumpad(
@@ -38,6 +114,9 @@ export function mountNumpad(
   applyModuleClasses(instance.root, styles, "container");
   applyModuleClasses(instance.display, styles, "display");
   applyModuleClasses(instance.keypad, styles, "keypad");
+
+  // Apply mask classes to dynamically created mask elements
+  applyMaskClasses(instance.display);
 
   // Apply custom class name
   if (className) {

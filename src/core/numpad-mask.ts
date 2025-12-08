@@ -2,7 +2,7 @@
  * Mask display component - renders mask-based input with character slots
  */
 
-import type { MaskFormat, MaskState, MaskDisplayOptions } from "@/types/mask";
+import type { MaskFormat, MaskState, MaskDisplayOptions, MaskSegment } from "@/types/mask";
 import { getLocalizedDecimalSeparator } from "@/utils/mask.utils";
 
 export interface MaskDisplayElement {
@@ -21,14 +21,19 @@ export function createMaskDisplay(
   const { showCharacterSlots = true, charWidth = "1.2ch", locale } = options;
 
   const container = document.createElement("div");
-  container.className = "numflux-mask-display";
+  container.className = "nf-mask-display";
+
   container.dataset.maskType = format.type;
+
+  // Inline styles as fallback for CSS Modules environments
+  container.style.whiteSpace = "nowrap";
+  container.style.flexWrap = "nowrap";
 
   // Apply CSS variables
   container.style.setProperty("--char-width", charWidth);
 
   if (format.type === "fraction") {
-    createFractionDisplay(container, format, showCharacterSlots);
+    createFractionDisplay(container, format, showCharacterSlots, locale);
   } else if (format.type === "decimal") {
     createDecimalDisplay(container, format, showCharacterSlots, locale);
   } else {
@@ -52,36 +57,44 @@ export function createMaskDisplay(
 function createFractionDisplay(
   container: HTMLElement,
   format: MaskFormat,
-  showCharacterSlots: boolean
+  showCharacterSlots: boolean,
+  locale?: string
 ): void {
   const wrapper = document.createElement("div");
-  wrapper.className = "numflux-mask-fraction";
+  wrapper.className = "nf-mask-fraction";
+
+  // Inline styles as fallback for CSS Modules environments
+  wrapper.style.flexWrap = "nowrap";
+  wrapper.style.whiteSpace = "nowrap";
 
   // Prefix
   if (format.prefix) {
     const prefix = document.createElement("span");
-    prefix.className = "numflux-mask-prefix";
+    prefix.className = "nf-mask-prefix";
     prefix.textContent = format.prefix;
     wrapper.appendChild(prefix);
   }
 
   // Fraction container
   const fractionContainer = document.createElement("div");
-  fractionContainer.className = "numflux-mask-fraction-container";
+  fractionContainer.className = "nf-mask-fraction-container";
 
   // Numerator
   const numeratorSeg = format.segments.find((s) => s.type === "numerator");
   if (numeratorSeg) {
     const numerator = document.createElement("span");
-    numerator.className = "numflux-mask-numerator";
+    numerator.className = "nf-mask-numerator";
     numerator.dataset.segment = "numerator";
-    createSegmentSlots(numerator, numeratorSeg.length, showCharacterSlots);
+    createSegmentSlots(numerator, numeratorSeg, {
+      showCharacterSlots,
+      decimalSeparatorChar: locale ? getLocalizedDecimalSeparator(locale) : ","
+    });
     fractionContainer.appendChild(numerator);
   }
 
   // Division line
   const divisionLine = document.createElement("span");
-  divisionLine.className = "numflux-mask-division-line";
+  divisionLine.className = "nf-mask-division-line";
   divisionLine.textContent = "/";
   fractionContainer.appendChild(divisionLine);
 
@@ -89,9 +102,9 @@ function createFractionDisplay(
   const denominatorSeg = format.segments.find((s) => s.type === "denominator");
   if (denominatorSeg) {
     const denominator = document.createElement("span");
-    denominator.className = "numflux-mask-denominator";
+    denominator.className = "nf-mask-denominator";
     denominator.dataset.segment = "denominator";
-    createSegmentSlots(denominator, denominatorSeg.length, showCharacterSlots);
+    createSegmentSlots(denominator, denominatorSeg, { showCharacterSlots });
     fractionContainer.appendChild(denominator);
   }
 
@@ -100,7 +113,7 @@ function createFractionDisplay(
   // Suffix
   if (format.suffix) {
     const suffix = document.createElement("span");
-    suffix.className = "numflux-mask-suffix";
+    suffix.className = "nf-mask-suffix";
     suffix.textContent = format.suffix;
     wrapper.appendChild(suffix);
   }
@@ -118,12 +131,12 @@ function createDecimalDisplay(
   locale?: string
 ): void {
   const wrapper = document.createElement("div");
-  wrapper.className = "numflux-mask-decimal";
+  wrapper.className = "nf-mask-decimal";
 
   // Prefix
   if (format.prefix) {
     const prefix = document.createElement("span");
-    prefix.className = "numflux-mask-prefix";
+    prefix.className = "nf-mask-prefix";
     prefix.textContent = format.prefix;
     wrapper.appendChild(prefix);
   }
@@ -132,15 +145,15 @@ function createDecimalDisplay(
   const integerSeg = format.segments.find((s) => s.type === "integer");
   if (integerSeg) {
     const integer = document.createElement("span");
-    integer.className = "numflux-mask-integer";
+    integer.className = "nf-mask-integer";
     integer.dataset.segment = "integer";
-    createSegmentSlots(integer, integerSeg.length, showCharacterSlots);
+    createSegmentSlots(integer, integerSeg, { showCharacterSlots });
     wrapper.appendChild(integer);
   }
 
   // Decimal separator
   const separator = document.createElement("span");
-  separator.className = "numflux-mask-separator";
+  separator.className = "nf-mask-separator";
   separator.textContent = getLocalizedDecimalSeparator(locale);
   wrapper.appendChild(separator);
 
@@ -148,16 +161,16 @@ function createDecimalDisplay(
   const fractionalSeg = format.segments.find((s) => s.type === "fractional");
   if (fractionalSeg) {
     const fractional = document.createElement("span");
-    fractional.className = "numflux-mask-fractional";
+    fractional.className = "nf-mask-fractional";
     fractional.dataset.segment = "fractional";
-    createSegmentSlots(fractional, fractionalSeg.length, showCharacterSlots);
+    createSegmentSlots(fractional, fractionalSeg, { showCharacterSlots });
     wrapper.appendChild(fractional);
   }
 
   // Suffix
   if (format.suffix) {
     const suffix = document.createElement("span");
-    suffix.className = "numflux-mask-suffix";
+    suffix.className = "nf-mask-suffix";
     suffix.textContent = format.suffix;
     wrapper.appendChild(suffix);
   }
@@ -174,12 +187,12 @@ function createSimpleDisplay(
   showCharacterSlots: boolean
 ): void {
   const wrapper = document.createElement("div");
-  wrapper.className = "numflux-mask-simple";
+  wrapper.className = "nf-mask-simple";
 
   // Prefix
   if (format.prefix) {
     const prefix = document.createElement("span");
-    prefix.className = "numflux-mask-prefix";
+    prefix.className = "nf-mask-prefix";
     prefix.textContent = format.prefix;
     wrapper.appendChild(prefix);
   }
@@ -188,16 +201,16 @@ function createSimpleDisplay(
   const integerSeg = format.segments.find((s) => s.type === "integer");
   if (integerSeg) {
     const integer = document.createElement("span");
-    integer.className = "numflux-mask-integer";
+    integer.className = "nf-mask-integer";
     integer.dataset.segment = "integer";
-    createSegmentSlots(integer, integerSeg.length, showCharacterSlots);
+    createSegmentSlots(integer, integerSeg, { showCharacterSlots });
     wrapper.appendChild(integer);
   }
 
   // Suffix
   if (format.suffix) {
     const suffix = document.createElement("span");
-    suffix.className = "numflux-mask-suffix";
+    suffix.className = "nf-mask-suffix";
     suffix.textContent = format.suffix;
     wrapper.appendChild(suffix);
   }
@@ -208,24 +221,51 @@ function createSimpleDisplay(
 /**
  * Create character slots for a segment
  */
+type SegmentSlotOptions = {
+  showCharacterSlots: boolean;
+  decimalSeparatorChar?: string;
+};
+
 function createSegmentSlots(
   segment: HTMLElement,
-  length: number,
-  showCharacterSlots: boolean
+  segmentInfo: MaskSegment,
+  options: SegmentSlotOptions
 ): void {
+  const { showCharacterSlots, decimalSeparatorChar = "," } = options;
+  const { length, thousandsSeparators, decimalSeparator } = segmentInfo;
+
   if (!showCharacterSlots) {
     segment.textContent = "";
     return;
   }
 
+  const thousandsSet = new Set<number>(
+    Array.isArray(thousandsSeparators) ? thousandsSeparators : []
+  );
+
   for (let i = 0; i < length; i++) {
     const slot = document.createElement("span");
-    slot.className = "numflux-mask-char-slot";
+    slot.className = "nf-mask-char-slot";
     slot.dataset.index = i.toString();
     slot.dataset.filled = "false";
     slot.textContent = "_";
     segment.appendChild(slot);
+
+    const position = i + 1;
+
+    if (decimalSeparator && position === decimalSeparator) {
+      segment.appendChild(createSeparatorSpan(decimalSeparatorChar, "decimal"));
+    } else if (thousandsSet.has(position)) {
+      segment.appendChild(createSeparatorSpan(".", "thousands"));
+    }
   }
+}
+
+function createSeparatorSpan(char: string, kind: "decimal" | "thousands"): HTMLElement {
+  const separator = document.createElement("span");
+  separator.className = `nf-mask-inline-separator nf-mask-inline-separator--${kind}`;
+  separator.textContent = char;
+  return separator;
 }
 
 /**
@@ -240,7 +280,7 @@ function updateMaskDisplay(container: HTMLElement, state: MaskState, format: Mas
 
     if (!segmentElement) return;
 
-    const slots = segmentElement.querySelectorAll(".numflux-mask-char-slot");
+    const slots = segmentElement.querySelectorAll('[data-index]');
 
     if (slots.length > 0) {
       // Update character slots
