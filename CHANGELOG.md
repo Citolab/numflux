@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/Citolab/numflux/compare/v1.4.1...v1.4.2) (2025-12-08)
+
+
+### Bug Fixes
+
+* properly apply mask classes for css modules, support more complex currency mask formats ([96531d9](https://github.com/Citolab/numflux/commit/96531d9a963f62880d32a6aaf3a10baa6b8caa6c))
+
 ## [1.4.1](https://github.com/Citolab/numflux/compare/v1.4.0...v1.4.1) (2025-12-02)
 
 
