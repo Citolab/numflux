@@ -213,6 +213,7 @@ Numflux supports masked input formats for structured values (decimals, fractions
 - `__,__` — decimal with two integer and two fractional slots
 - `__/_` — fraction with a two-digit numerator and one-digit denominator
 - `€ ___,__` — currency with prefix and decimal slots
+- `€ __.___,__` — currency with thousands separator and decimal slots
 - `__ / __ / ____` — segmented values like dates
 
 **Using masks**
