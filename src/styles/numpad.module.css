@@ -25,6 +25,10 @@
   composes: nf-button-ghost from "./numpad.global.css";
 }
 
+.buttonWide {
+  composes: nf-button-wide from "./numpad.global.css";
+}
+
 .announcer {
   composes: nf-announcer from "./numpad.global.css";
 }

@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   compose,
   getButtonVariant,
+  isWideButton,
   toArray,
   withAttributes,
   withClassNames,
@@ -92,6 +93,34 @@ describe("utils", () => {
     expect(digit?.className).toContain("btn");
     expect(submit?.className).toContain("accent");
     expect(del?.className).toContain("ghost");
+  });
+
+  it("isWideButton is true only for the zero digit key", () => {
+    const zero = document.createElement("button");
+    zero.dataset.action = "digit";
+    zero.dataset.digit = "0";
+    const one = document.createElement("button");
+    one.dataset.action = "digit";
+    one.dataset.digit = "1";
+    const submit = document.createElement("button");
+    submit.dataset.action = "submit";
+
+    expect(isWideButton(zero)).toBe(true);
+    expect(isWideButton(one)).toBe(false);
+    expect(isWideButton(submit)).toBe(false);
+  });
+
+  it("withClassNames applies buttonWide to the zero key only", () => {
+    instance.keypad.innerHTML = `
+      <button data-action="digit" data-digit="1">1</button>
+      <button data-action="digit" data-digit="0">0</button>
+    `;
+
+    withClassNames(instance as any, { buttonWide: "wide" });
+
+    const [one, zero] = Array.from(instance.keypad.querySelectorAll("button"));
+    expect(one?.className).not.toContain("wide");
+    expect(zero?.className).toContain("wide");
   });
 
   it("withTheme applies theme props", () => {

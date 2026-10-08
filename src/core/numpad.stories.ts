@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/html";
 import { action } from "@storybook/addon-actions";
+import { expect, within } from "@storybook/test";
 
 import { mountNumpad, type CssModulesNumpadOptions } from "@/integrations/css-modules";
 import type { NumpadState, DisplayValue } from "@/types/numpad";
@@ -176,5 +177,25 @@ export const CustomLabels: Story = {
       toggleSign: "Flip"
     },
     initialValue: "100"
+  }
+};
+
+export const HiddenSubmit: Story = {
+  args: {
+    hideSubmit: true,
+    initialValue: "42"
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const buttons = canvas.getAllByRole("gridcell");
+    const actions = buttons.map((button) => button.dataset.action);
+
+    // Submit is gone, everything else is still there: 10 digits + delete, clear, sign, decimal
+    await expect(actions).not.toContain("submit");
+    await expect(buttons).toHaveLength(14);
+
+    // The zero key still spans two columns
+    const zero = buttons.find((button) => button.dataset.digit === "0");
+    await expect(zero && getComputedStyle(zero).gridColumnStart).toBe("span 2");
   }
 };

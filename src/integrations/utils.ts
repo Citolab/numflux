@@ -20,6 +20,7 @@ export function withClassNames(
     button?: string | string[];
     buttonAccent?: string | string[];
     buttonGhost?: string | string[];
+    buttonWide?: string | string[];
   }
 ) {
   if (classMap.container) {
@@ -39,7 +40,7 @@ export function withClassNames(
     instance.keypad.classList.add(...keypadClasses);
   }
 
-  if (classMap.button || classMap.buttonAccent || classMap.buttonGhost) {
+  if (classMap.button || classMap.buttonAccent || classMap.buttonGhost || classMap.buttonWide) {
     const buttons = instance.keypad.querySelectorAll("button");
     buttons.forEach((button) => {
       const variant = getButtonVariant(button);
@@ -61,6 +62,10 @@ export function withClassNames(
           ? classMap.buttonGhost
           : [classMap.buttonGhost];
         button.classList.add(...ghostClasses);
+      }
+
+      if (isWideButton(button) && classMap.buttonWide) {
+        button.classList.add(...toArray(classMap.buttonWide));
       }
     });
   }
@@ -199,6 +204,13 @@ export function getButtonVariant(button: HTMLButtonElement): ButtonVariant {
     return BUTTON_VARIANTS[action];
   }
   return "default";
+}
+
+/**
+ * The zero key spans two columns, like on a computer numpad
+ */
+export function isWideButton(button: HTMLButtonElement): boolean {
+  return button.dataset.digit === "0";
 }
 
 /**

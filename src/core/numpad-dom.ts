@@ -39,6 +39,8 @@ export interface NumpadDomOptions extends Partial<NumpadConfig>, Partial<NumpadO
   onSubmit?: (state: NumpadState, display: DisplayValue) => void;
   labels?: Partial<Record<"clear" | "delete" | "submit" | "decimal" | "toggleSign", string>>;
   placeholder?: string;
+  /** Hide the on-screen submit (enter/ok) key. Defaults to false (key is shown). */
+  hideSubmit?: boolean;
   label?: string;
   /** Label theme - controls button icons/text using predefined themes */
   labelTheme?: "ascii" | "unicode" | "symbols" | "minimal";
@@ -170,13 +172,16 @@ export function createNumpadDom(
   }
 
   // Build and mount keys
-  const keys = buildKeys(config, options.labels, options.labelTheme);
+  const keys = buildKeys(config, options.labels, options.labelTheme, options.hideSubmit);
   keys.forEach((key) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = `numflux-button ${buildButtonClassName(key.variant)}`.trim();
     button.textContent = key.label;
     button.dataset.action = key.action.type;
+    if (key.action.type === "digit") {
+      button.dataset.digit = String(key.action.digit);
+    }
 
     // Accessibility attributes
     safeSetAttribute(button, "aria-label", getButtonAriaLabel(key));
@@ -214,8 +219,8 @@ export function createNumpadDom(
         isDisabled = !canToggleSign(state.value, config);
       } else if (action === "decimal") {
         isDisabled = !config.allowDecimal;
-      } else if (action?.startsWith("digit:")) {
-        const digit = parseInt(action.split(":")[1]);
+      } else if (action === "digit") {
+        const digit = parseInt(button.dataset.digit ?? "");
 
         // Check mask completion first
         if (config.mask && state.maskState) {
@@ -382,7 +387,8 @@ export function createNumpadDom(
 function buildKeys(
   config: NumpadConfig,
   customLabels?: NumpadDomOptions["labels"],
-  labelTheme?: NumpadDomOptions["labelTheme"]
+  labelTheme?: NumpadDomOptions["labelTheme"],
+  hideSubmit?: boolean
 ): KeyDescriptor[] {
   // Helper to resolve labels with theme support
   const resolveLabel = (key: string, fallback: string): string => {
@@ -413,20 +419,22 @@ function buildKeys(
   }));
 
   const bottomRow: KeyDescriptor[] = [
-    { label: toggleSignLabel, action: { type: "toggle-sign" }, variant: "ghost" },
     { label: "0", action: { type: "digit", digit: 0 } },
-    { label: decimalLabel, action: { type: "decimal" }, variant: "ghost" }
+    { label: decimalLabel, action: { type: "decimal" }, variant: "ghost" },
+    { label: submitLabel, action: { type: "submit" }, variant: "accent" }
   ];
 
-  return [
+  const keys: KeyDescriptor[] = [
     ...digits.slice(0, 3),
     { label: deleteLabel, action: { type: "delete" }, variant: "ghost" },
     ...digits.slice(3, 6),
     { label: clearLabel, action: { type: "clear" }, variant: "ghost" },
     ...digits.slice(6, 9),
-    { label: submitLabel, action: { type: "submit" }, variant: "accent" },
+    { label: toggleSignLabel, action: { type: "toggle-sign" }, variant: "ghost" },
     ...bottomRow
   ];
+
+  return hideSubmit ? keys.filter((key) => key.action.type !== "submit") : keys;
 }
 
 function buildButtonClassName(variant: KeyVariant = "default"): string {

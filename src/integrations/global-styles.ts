@@ -1,6 +1,6 @@
 import { createNumpadDom, type NumpadDomOptions, type NumpadDomInstance } from "@/core/numpad-dom";
 import "@/styles/numpad.global.css";
-import { getButtonVariant } from "./utils";
+import { getButtonVariant, isWideButton } from "./utils";
 
 export interface CreateNumpadOptions extends Omit<
   NumpadDomOptions,
@@ -48,6 +48,10 @@ export function createNumpad(
       button.classList.add("nf-button-accent");
     } else if (variant === "ghost") {
       button.classList.add("nf-button-ghost");
+    }
+
+    if (isWideButton(button)) {
+      button.classList.add("nf-button-wide");
     }
   });
 

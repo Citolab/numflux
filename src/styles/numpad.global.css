@@ -151,6 +151,10 @@
   box-shadow: var(--nf-accent-hover-shadow);
 }
 
+.nf-button-wide {
+  grid-column: span 2;
+}
+
 .nf-button-ghost {
   color: var(--nf-muted);
 }

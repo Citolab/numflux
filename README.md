@@ -135,6 +135,23 @@ console.log("Current:", numpad.getState().value);
 numpad.destroy();
 ```
 
+#### Key layout
+
+The keys follow a computer numpad: `0` spans two columns, and the sign toggle sits above the submit key.
+
+```
+7  8  9  ⌫
+4  5  6  C
+1  2  3  ±
+0     .  ↵
+```
+
+To hide the on-screen submit key, set `hideSubmit`. Its cell is left empty. This only affects the button: `dispatch({ type: "submit" })` and the physical Enter key still submit.
+
+```typescript
+createNumpad(container, { hideSubmit: true });
+```
+
 ### Framework-agnostic DOM (No styling)
 
 ```typescript
@@ -495,7 +512,8 @@ function createTailwindNumpad(container, options) {
     keypad: "grid grid-cols-4 gap-2",
     button: "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition",
     buttonAccent: "bg-green-500 hover:bg-green-600",
-    buttonGhost: "bg-gray-300 hover:bg-gray-400 text-black"
+    buttonGhost: "bg-gray-300 hover:bg-gray-400 text-black",
+    buttonWide: "col-span-2" // the "0" key
   });
 }
 ```
@@ -690,6 +708,9 @@ interface NumpadConfig {
 
   // Behavior
   sync?: boolean;                   // Real-time onChange vs submit-only
+
+  // Layout (DOM options, not part of the reducer config)
+  hideSubmit?: boolean;             // Hide the on-screen submit key (default: false)
 
   // Accessibility
   a11y?: {

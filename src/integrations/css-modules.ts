@@ -2,7 +2,7 @@ import { createNumpadDom, type NumpadDomOptions, type NumpadDomInstance } from "
 import type { NumpadAction } from "@/types";
 import { applyModuleClasses } from "@/utils";
 
-import { getButtonVariant } from "./utils";
+import { getButtonVariant, isWideButton } from "./utils";
 
 import rawStyles from "@/styles/numpad.module.css";
 
@@ -131,7 +131,11 @@ export function mountNumpad(
 
       // Remove all existing classes and reapply with current disabled state
       button.className = "";
-      applyModuleClasses(button, styles, ...buildButtonClassNames(variant, isDisabled));
+      applyModuleClasses(
+        button,
+        styles,
+        ...buildButtonClassNames(variant, isDisabled, isWideButton(button))
+      );
     });
   };
 
@@ -139,7 +143,11 @@ export function mountNumpad(
   const buttons = instance.keypad.querySelectorAll("button");
   buttons.forEach((button) => {
     const variant = getButtonVariant(button);
-    applyModuleClasses(button, styles, ...buildButtonClassNames(variant));
+    applyModuleClasses(
+      button,
+      styles,
+      ...buildButtonClassNames(variant, false, isWideButton(button))
+    );
   });
 
   // Apply initial disabled classes
@@ -158,11 +166,13 @@ export function mountNumpad(
 
 function buildButtonClassNames(
   variant: "accent" | "ghost" | "default" = "default",
-  disabled = false
+  disabled = false,
+  wide = false
 ): StyleKey[] {
   const classes: StyleKey[] = ["button"];
   if (variant === "accent") classes.push("buttonAccent");
   if (variant === "ghost") classes.push("buttonGhost");
+  if (wide) classes.push("buttonWide");
   if (disabled) classes.push("buttonDisabled");
   return classes;
 }

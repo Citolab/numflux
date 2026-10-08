@@ -300,6 +300,84 @@ describe("createNumpadDom", () => {
     // The custom labels affect button creation, which is tested implicitly
   });
 
+  describe("key layout", () => {
+    const renderedButtons = (instance: NumpadDomInstance): HTMLButtonElement[] =>
+      (instance.keypad.appendChild as ReturnType<typeof vi.fn>).mock.calls.map(
+        ([button]) => button as HTMLButtonElement
+      );
+
+    it("should order keys like a computer numpad, with sign above submit", () => {
+      numpad = createNumpadDom(container);
+
+      const layout = renderedButtons(numpad).map((button) =>
+        button.dataset.digit !== undefined ? button.dataset.digit : button.dataset.action
+      );
+
+      expect(layout).toEqual([
+        "7",
+        "8",
+        "9",
+        "delete",
+        "4",
+        "5",
+        "6",
+        "clear",
+        "1",
+        "2",
+        "3",
+        "toggle-sign",
+        "0",
+        "decimal",
+        "submit"
+      ]);
+    });
+
+    it("should expose the digit on digit keys only", () => {
+      numpad = createNumpadDom(container);
+
+      const withDigit = renderedButtons(numpad).filter(
+        (button) => button.dataset.digit !== undefined
+      );
+      expect(withDigit).toHaveLength(10);
+      expect(withDigit.every((button) => button.dataset.action === "digit")).toBe(true);
+    });
+  });
+
+  describe("hideSubmit", () => {
+    const renderedActions = (instance: NumpadDomInstance): string[] =>
+      (instance.keypad.appendChild as ReturnType<typeof vi.fn>).mock.calls.map(
+        ([button]) => (button as HTMLButtonElement).dataset.action as string
+      );
+
+    it("should render the submit key by default", () => {
+      numpad = createNumpadDom(container);
+      expect(renderedActions(numpad)).toContain("submit");
+    });
+
+    it("should render the submit key when hideSubmit is false", () => {
+      numpad = createNumpadDom(container, { hideSubmit: false });
+      expect(renderedActions(numpad)).toContain("submit");
+    });
+
+    it("should omit only the submit key when hideSubmit is true", () => {
+      const withSubmit = renderedActions(createNumpadDom(container));
+      vi.clearAllMocks();
+
+      numpad = createNumpadDom(container, { hideSubmit: true });
+      const withoutSubmit = renderedActions(numpad);
+
+      expect(withoutSubmit).not.toContain("submit");
+      expect(withoutSubmit).toEqual(withSubmit.filter((action) => action !== "submit"));
+    });
+
+    it("should still allow submit via dispatch when the key is hidden", () => {
+      const onSubmit = vi.fn();
+      numpad = createNumpadDom(container, { hideSubmit: true, onSubmit });
+      numpad.dispatch({ type: "submit" });
+      expect(onSubmit).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it("should apply custom className", () => {
     numpad = createNumpadDom(container, {
       className: "my-custom-class"
@@ -440,7 +518,9 @@ describe("createNumpadDom", () => {
       expect(display.dataset.error).toBe("minValue");
       // Check if aria-invalid attribute exists and has correct value
       // In test environment, check both getAttribute method and direct property access
-      const ariaInvalid = (display as any).getAttribute ? (display as any).getAttribute("aria-invalid") : (display as any)["aria-invalid"];
+      const ariaInvalid = (display as any).getAttribute
+        ? (display as any).getAttribute("aria-invalid")
+        : (display as any)["aria-invalid"];
       expect(ariaInvalid || "true").toBe("true"); // Default to "true" if attribute setting worked
     });
 
@@ -455,7 +535,9 @@ describe("createNumpadDom", () => {
       const display = numpad.display;
       expect(display.dataset.error).toBe("maxValue");
       // Check if aria-invalid attribute exists and has correct value
-      const ariaInvalidMax = (display as any).getAttribute ? (display as any).getAttribute("aria-invalid") : (display as any)["aria-invalid"];
+      const ariaInvalidMax = (display as any).getAttribute
+        ? (display as any).getAttribute("aria-invalid")
+        : (display as any)["aria-invalid"];
       expect(ariaInvalidMax || "true").toBe("true"); // Default to "true" if attribute setting worked
     });
 
@@ -478,7 +560,9 @@ describe("createNumpadDom", () => {
       // Error should be cleared (implementation deletes the property, making it undefined)
       expect(numpad.display.dataset.error).toBeUndefined();
       // Check if aria-invalid attribute exists and has correct value
-      const ariaInvalidClear = (numpad.display as any).getAttribute ? (numpad.display as any).getAttribute("aria-invalid") : (numpad.display as any)["aria-invalid"];
+      const ariaInvalidClear = (numpad.display as any).getAttribute
+        ? (numpad.display as any).getAttribute("aria-invalid")
+        : (numpad.display as any)["aria-invalid"];
       expect(ariaInvalidClear || "false").toBe("false"); // Default to "false" if attribute setting worked
     });
 

@@ -9,7 +9,8 @@ vi.mock("@/styles/numpad.module.css", () => ({
     keypad: "keypad-class",
     button: "btn",
     buttonAccent: "btn-accent",
-    buttonGhost: "btn-ghost"
+    buttonGhost: "btn-ghost",
+    buttonWide: "btn-wide"
   }
 }));
 
@@ -268,5 +269,15 @@ describe("mountNumpad", () => {
     expect(submit?.className).toBe("btn btn-accent");
     expect(del?.className).toBe("btn btn-ghost");
     expect(digit?.className).toBe("btn");
+  });
+
+  it("applies the wide class to the zero key only", () => {
+    numpad = mountNumpad(container);
+
+    const buttons = Array.from(numpad.keypad.querySelectorAll("button"));
+    const wide = buttons.filter((btn) => btn.className.includes("btn-wide"));
+
+    expect(wide).toHaveLength(1);
+    expect(wide[0]?.dataset.digit).toBe("0");
   });
 });

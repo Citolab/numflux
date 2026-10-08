@@ -129,8 +129,14 @@ export function canAddDigit(currentValue: string, digit: number, config: NumpadC
     return false;
   }
 
-  // Check minValue constraint (only matters for negative numbers)
-  if (config.minValue !== null && config.minValue !== undefined && numeric < config.minValue) {
+  // Check minValue constraint (only matters for negative numbers: adding digits to a
+  // positive number never moves it below a lower bound, so partial entries stay possible)
+  if (
+    config.minValue !== null &&
+    config.minValue !== undefined &&
+    numeric < 0 &&
+    numeric < config.minValue
+  ) {
     return false;
   }
 

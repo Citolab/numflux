@@ -4,6 +4,7 @@ import {
   getDecimalPlaces,
   isValidValue,
   isWithinDecimalLimit,
+  canAddDigit,
   sanitizeValue,
   normalizeLeadingZeros
 } from "@/utils/validation.utils";
@@ -229,5 +230,35 @@ describe("sanitizeValue", () => {
     const config = normalizeConfig({ allowNegative: true });
     expect(sanitizeValue("-", config)).toBe("-");
     expect(sanitizeValue("--", config)).toBe("-"); // multiple minus signs
+  });
+});
+
+describe("canAddDigit", () => {
+  it("should allow digits when no constraints are set", () => {
+    expect(canAddDigit("12", 3, normalizeConfig())).toBe(true);
+  });
+
+  it("should block digits once maxDigits is reached", () => {
+    const config = normalizeConfig({ maxDigits: 3 });
+    expect(canAddDigit("12", 3, config)).toBe(true);
+    expect(canAddDigit("123", 4, config)).toBe(false);
+  });
+
+  it("should block digits that would exceed maxValue", () => {
+    const config = normalizeConfig({ maxValue: 50 });
+    expect(canAddDigit("5", 0, config)).toBe(true);
+    expect(canAddDigit("5", 1, config)).toBe(false);
+  });
+
+  it("should not block partial entries below a positive minValue", () => {
+    const config = normalizeConfig({ minValue: 10 });
+    expect(canAddDigit("", 5, config)).toBe(true);
+    expect(canAddDigit("1", 5, config)).toBe(true);
+  });
+
+  it("should block digits that push a negative number below minValue", () => {
+    const config = normalizeConfig({ minValue: -50 });
+    expect(canAddDigit("-5", 0, config)).toBe(true);
+    expect(canAddDigit("-5", 1, config)).toBe(false);
   });
 });
