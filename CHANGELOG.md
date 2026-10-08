@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/Citolab/numflux/compare/v1.4.2...v1.5.0) (2026-10-08)
+
+
+### Features
+
+* make it possible to hide enter button through config ([bf0b82a](https://github.com/Citolab/numflux/commit/bf0b82a8796c011769db96c4457955f380e6ab00))
+
 ## [1.4.2](https://github.com/Citolab/numflux/compare/v1.4.1...v1.4.2) (2025-12-08)
 
 

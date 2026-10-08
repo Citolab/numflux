@@ -1,6 +1,6 @@
 {
   "name": "@citolab/numflux",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "Framework-agnostic numpad",
   "type": "module",
   "main": "dist/index.js",
